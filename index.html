@@ -5485,7 +5485,7 @@ const RPS_101_MATRIX = RPS_MATRIX;
         // ============================================================================
         // 6. REAL-TIME RESOLUTION ENGINE
         // ============================================================================
-        socket.on("combat-resolved", (movesObj) => {
+       socket.on("combat-resolved", (movesObj) => {
             let myId = socket.id;
             let oppId = Object.keys(movesObj).find(id => id !== myId);
 
@@ -5503,43 +5503,30 @@ const RPS_101_MATRIX = RPS_MATRIX;
                 resultBanner.style.color = "#ffdf00";
                 flavorBanner.innerText = `${rps101Items[myMove]} clashes evenly with ${rps101Items[oppMove]}`;
             } else {
+                // Calculate cyclic index distance to determine the winner
                 let distance = (oppMove - myMove + 101) % 101;
                 let iWon = (distance <= 50);
 
                 if (iWon) {
                     resultBanner.innerText = "YOU WIN THE ROUND!";
                     resultBanner.style.color = "#00f2fe";
-                    let verbAction = RPS_MATRIX[myMove][oppMove];
+                    
+                    // FIXED: Uses the relative layout distance index (1-50) to fetch the custom text
+                    let verbAction = RPS_MATRIX[myMove][distance];
                     if (!verbAction || verbAction === "") verbAction = "defeats";
+                    
                     flavorBanner.innerText = `${rps101Items[myMove]} ${verbAction} ${rps101Items[oppMove]}`;
                 } else {
                     resultBanner.innerText = "OPPONENT WINS THE ROUND!";
                     resultBanner.style.color = "#e94560";
-                    let verbAction = RPS_MATRIX[oppMove][myMove];
+                    
+                    // FIXED: Recalculates the opponent's relative offset distance for their text look-up
+                    let oppDistance = (myMove - oppMove + 101) % 101;
+                    let verbAction = RPS_MATRIX[oppMove][oppDistance];
                     if (!verbAction || verbAction === "") verbAction = "defeats";
+                    
                     flavorBanner.innerText = `${rps101Items[oppMove]} ${verbAction} ${rps101Items[myMove]}`;
                 }
             }
             document.getElementById("btn-reset").style.display = "inline-block";
         });
-
-        socket.on("rematch-reset", () => {
-            document.getElementById("btn-reset").style.display = "none";
-            document.getElementById("result-banner").innerText = "";
-            document.getElementById("flavor-banner").innerText = "";
-            document.getElementById("my-choice-display").innerText = "Choosing...";
-            document.getElementById("opp-choice-display").innerText = "???";
-            document.getElementById("my-status").innerText = "Ready to lock in";
-            document.getElementById("my-status").style.color = "#aaa";
-            document.getElementById("opp-status").innerText = "Waiting...";
-            document.getElementById("opp-status").style.color = "#aaa";
-            document.querySelectorAll(".item-btn").forEach(b => b.classList.remove("selected"));
-            mySelectedChoice = null;
-        });
-
-        document.getElementById("btn-reset").onclick = () => {
-            socket.emit("request-rematch", activeRoomId);
-        };
-    </script>
-</body>
-</html>
