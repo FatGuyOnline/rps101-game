@@ -1,4 +1,81 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPS 101 Multiplayer Matrix Arena</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a2e;
+            color: #e2e2e2;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 { color: #00f2fe; margin-bottom: 5px; }
+        .container { max-width: 900px; margin: auto; background: #162447; padding: 25px; border-radius: 12px; box-shadow: 0px 8px 16px rgba(0,0,0,0.4); }
+        .setup-panel { background: #1f4068; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        button { background: #00f2fe; color: #1a1a2e; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        button:hover { background: #4facfe; transform: scale(1.02); }
+        input { padding: 10px; font-size: 16px; border-radius: 5px; border: none; margin: 5px; width: 220px; text-align: center; background: #334155; color: white; }
+        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; background: #e94560; font-weight: bold; margin-top: 10px; }
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; max-height: 350px; overflow-y: auto; padding: 10px; background: #1a1a2e; border-radius: 8px; margin-top: 15px; border: 1px solid #00f2fe; }
+        .item-btn { background: #1f4068; color: #fff; border: 1px solid #4facfe; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .item-btn:hover { background: #4facfe; color: #1a1a2e; font-weight: bold; }
+        .item-btn.selected { background: #00f2fe; color: #1a1a2e; font-weight: bold; border: 2px solid #fff; }
+        .display-area { display: flex; justify-content: space-around; align-items: center; margin: 25px 0; background: #1f4068; padding: 20px; border-radius: 8px; }
+        .player-card { width: 45%; padding: 15px; background: #162447; border-radius: 6px; border: 1px solid #4facfe; }
+        .choice-name { font-size: 24px; font-weight: bold; color: #00f2fe; margin: 10px 0; }
+        .vs { font-size: 28px; font-weight: bold; color: #e94560; }
+        #result-banner { font-size: 26px; font-weight: bold; color: #ffdf00; margin: 20px 0; min-height: 35px; text-shadow: 0 0 10px rgba(255,223,0,0.3); }
+        .flavor-text { font-size: 16px; font-style: italic; color: #a5f3fc; margin-top: 5px; font-weight: bold; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+    <h1>RPS 101: Socket Arena</h1>
+    <p>Powered by Direct Matrix Array Lookups</p>
+
+    <div class="container">
+        <div class="setup-panel">
+            <h3>Socket.io Match Lobby</h3>
+            <div id="lobby-controls">
+                <button id="btn-create">Host Custom Match</button>
+                <span style="margin: 0 15px; font-weight: bold;">OR</span>
+                <input type="text" id="input-join-id" placeholder="Enter Friend's Match ID">
+                <button id="btn-join">Join Match</button>
+            </div>
+            <div id="match-info" style="display:none; margin-top: 10px;">
+                <p>Share this Match ID with your friend: <strong id="display-match-id" style="color:#00f2fe; font-size: 18px;">-</strong></p>
+            </div>
+            <div id="status" class="status-badge">Connecting to server node...</div>
+        </div>
+
+        <div class="display-area">
+            <div class="player-card">
+                <h3>You</h3>
+                <div id="my-choice-display" class="choice-name">Choosing...</div>
+                <div id="my-status" style="color: #aaa;">Ready to lock in</div>
+            </div>
+            <div class="vs">VS</div>
+            <div class="player-card">
+                <h3>Opponent</h3>
+                <div id="opp-choice-display" class="choice-name">???</div>
+                <div id="opp-status" style="color: #aaa;">Waiting...</div>
+            </div>
+        </div>
+
+        <div id="result-banner"></div>
+        <div id="flavor-banner" class="flavor-text"></div>
+        <button id="btn-reset" style="display:none; margin-top: 15px; margin-bottom: 15px;">Next Round</button>
+
+        <h3>Select Your Ultimate Weapon</h3>
+        <div class="game-grid" id="action-grid"></div>
+    </div>
+
+    <script>
         console.log("[DEBUG 🚀] Game engine initializing...");
 
         const rps101Items = [
@@ -28,7 +105,7 @@
                 if (!response.ok) {
                     throw new Error(`HTTP network error! Status: ${response.status}`);
                 }
-                return response.text(); // Read as raw text first to isolate parsing errors
+                return response.text(); 
             })
             .then(rawText => {
                 try {
@@ -46,18 +123,24 @@
             });
 
         // ============================================================================
-        // GENERATE MENU SELECTION BUTTONS FOR ALL 101 ITEMS
+        // GENERATE MENU SELECTION BUTTONS FOR ALL 101 ITEMS (Safely waits for HTML to load)
         // ============================================================================
-        const grid = document.getElementById("action-grid");
-        for (let i = 1; i <= 101; i++) {
-            const btn = document.createElement("button");
-            btn.className = "item-btn";
-            btn.id = "btn-item-" + i;
-            btn.innerText = `${i}. ${rps101Items[i]}`;
-            btn.onclick = () => selectWeapon(i);
-            grid.appendChild(btn);
-        }
-        console.log("[DEBUG 🎯] Generated 101 selection nodes on layout grid.");
+        window.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById("action-grid");
+            if (grid) {
+                for (let i = 1; i <= 101; i++) {
+                    const btn = document.createElement("button");
+                    btn.className = "item-btn";
+                    btn.id = "btn-item-" + i;
+                    btn.innerText = `${i}. ${rps101Items[i]}`;
+                    btn.onclick = () => selectWeapon(i);
+                    grid.appendChild(btn);
+                }
+                console.log("[DEBUG 🎯] Generated 101 selection nodes on layout grid.");
+            } else {
+                console.error("[CRITICAL ERROR ❌] Could not find HTML element with id 'action-grid'!");
+            }
+        });
 
         // ============================================================================
         // NETWORK ENGINE AND SOCKET CONNECTION HANDLERS
@@ -130,7 +213,7 @@
 
         function selectWeapon(index) {
             if (!activeRoomId) {
-                console.warn("[GAME LOOP ⚠️] Weapon selection blocked: user not assigned to an active room room node.");
+                console.warn("[GAME LOOP ⚠️] Weapon selection blocked: user not assigned to an active room node.");
                 alert("Please Host or Join a match lobby first!");
                 return;
             }
@@ -240,3 +323,5 @@
             socket.emit("request-rematch", activeRoomId);
         };
     </script>
+</body>
+</html>
