@@ -1,40 +1,116 @@
-<script>
-console.log("[DEBUG] Game scripts initializing...");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPS 101 Multiplayer Matrix Arena</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a2e;
+            color: #e2e2e2;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 { color: #00f2fe; margin-bottom: 5px; }
+        .container { max-width: 900px; margin: auto; background: #162447; padding: 25px; border-radius: 12px; box-shadow: 0px 8px 16px rgba(0,0,0,0.4); }
+        .setup-panel { background: #1f4068; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        button { background: #00f2fe; color: #1a1a2e; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        button:hover { background: #4facfe; transform: scale(1.02); }
+        input { padding: 10px; font-size: 16px; border-radius: 5px; border: none; margin: 5px; width: 220px; text-align: center; background: #334155; color: white; }
+        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; background: #e94560; font-weight: bold; margin-top: 10px; }
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; max-height: 350px; overflow-y: auto; padding: 10px; background: #1a1a2e; border-radius: 8px; margin-top: 15px; border: 1px solid #00f2fe; }
+        .item-btn { background: #1f4068; color: #fff; border: 1px solid #4facfe; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .item-btn:hover { background: #4facfe; color: #1a1a2e; font-weight: bold; }
+        .item-btn.selected { background: #00f2fe; color: #1a1a2e; font-weight: bold; border: 2px solid #fff; }
+        .display-area { display: flex; justify-content: space-around; align-items: center; margin: 25px 0; background: #1f4068; padding: 20px; border-radius: 8px; }
+        .player-card { width: 45%; padding: 15px; background: #162447; border-radius: 6px; border: 1px solid #4facfe; }
+        .choice-name { font-size: 24px; font-weight: bold; color: #00f2fe; margin: 10px 0; }
+        .vs { font-size: 28px; font-weight: bold; color: #e94560; }
+        #result-banner { font-size: 26px; font-weight: bold; color: #ffdf00; margin: 20px 0; min-height: 35px; text-shadow: 0 0 10px rgba(255,223,0,0.3); }
+        .flavor-text { font-size: 16px; font-style: italic; color: #a5f3fc; margin-top: 5px; font-weight: bold; text-transform: uppercase; }
+    </style>
+</head>
+<body>
 
-// ============================================================================
-// 1. FULL LIST OF ALL 101 ITEMS (Index 0 is kept empty)
-// ============================================================================
-const rps101Items = [
-    "", 
-    "Dynamite", "Tornado", "Quicksand", "Pit", "Chain", "Gun", "Law", "Whip", "Sword", "Rock",
-    "Death", "Wall", "Sun", "Camera", "Fire", "Chainsaw", "School", "Scissors", "Poison", "Cage",
-    "Axe", "Peace", "Computer", "Castle", "Snake", "Blood", "Porcupine", "Vulture", "Monkey", "King",
-    "Queen", "Prince", "Princess", "Police", "Woman", "Baby", "Man", "Home", "Train", "Car",
-    "Noise", "Bicycle", "Tree", "Turnip", "Duck", "Wolf", "Cat", "Bird", "Fish", "Spider",
-    "Cockroach", "Brain", "Community", "Cross", "Money", "Vampire", "Sponge", "Church", "Butter", "Book",
-    "Paper", "Cloud", "Airplane", "Moon", "Grass", "Film", "Toilet", "Air", "Planet", "Guitar",
-    "Bowl", "Cup", "Beer", "Rain", "Water", "TV", "Rainbow", "UFO", "Alien", "Prayer",
-    "Mountain", "Satan", "Dragon", "Diamond", "Platinum", "Gold", "Devil", "Fence", "Video Game", "Math",
-    "Robot", "Heart", "Electricity", "Lightning", "Medusa", "Power", "Laser", "Nuke", "Sky", "Tank", "Helicopter"
-];
+    <h1>RPS 101: Socket Arena</h1>
+    <p>Powered by Direct Matrix Array Lookups</p>
 
-// ============================================================================
-// 2. SAFE MATRIX ALLOCATION BLOCK (Declared exactly once to prevent crashes)
-// ============================================================================
-const RPS_MATRIX = {};
+    <div class="container">
+        <div class="setup-panel">
+            <h3>Socket.io Match Lobby</h3>
+            <div id="lobby-controls">
+                <button id="btn-create">Host Custom Match</button>
+                <span style="margin: 0 15px; font-weight: bold;">OR</span>
+                <input type="text" id="input-join-id" placeholder="Enter Friend's Match ID">
+                <button id="btn-join">Join Match</button>
+            </div>
+            <div id="match-info" style="display:none; margin-top: 10px;">
+                <p>Share this Match ID with your friend: <strong id="display-match-id" style="color:#00f2fe; font-size: 18px;">-</strong></p>
+            </div>
+            <div id="status" class="status-badge">Connecting to server node...</div>
+        </div>
 
-for (let i = 1; i <= 101; i++) {
-    RPS_MATRIX[i] = {};
-    RPS_MATRIX[i][i] = "clashes evenly with"; // Safe structural fallback for draw rules
-}
-console.log("[DEBUG] Multi-dimensional lookup matrix safely allocated with tie-handlers.");
+        <div class="display-area">
+            <div class="player-card">
+                <h3>You</h3>
+                <div id="my-choice-display" class="choice-name">Choosing...</div>
+                <div id="my-status" style="color: #aaa;">Ready to lock in</div>
+            </div>
+            <div class="vs">VS</div>
+            <div class="player-card">
+                <h3>Opponent</h3>
+                <div id="opp-choice-display" class="choice-name">???</div>
+                <div id="opp-status" style="color: #aaa;">Waiting...</div>
+            </div>
+        </div>
+
+        <div id="result-banner"></div>
+        <div id="flavor-banner" class="flavor-text"></div>
+        <button id="btn-reset" style="display:none; margin-top: 15px; margin-bottom: 15px;">Next Round</button>
+
+        <h3>Select Your Ultimate Weapon</h3>
+        <div class="game-grid" id="action-grid"></div>
+    </div>
+
+    <script>
+        console.log("[DEBUG] Game scripts initializing...");
+
+        // ============================================================================
+        // 1. FULL LIST OF ALL 101 ITEMS
+        // ============================================================================
+        const rps101Items = [
+            "", 
+            "Dynamite", "Tornado", "Quicksand", "Pit", "Chain", "Gun", "Law", "Whip", "Sword", "Rock",
+            "Death", "Wall", "Sun", "Camera", "Fire", "Chainsaw", "School", "Scissors", "Poison", "Cage",
+            "Axe", "Peace", "Computer", "Castle", "Snake", "Blood", "Porcupine", "Vulture", "Monkey", "King",
+            "Queen", "Prince", "Princess", "Police", "Woman", "Baby", "Man", "Home", "Train", "Car",
+            "Noise", "Bicycle", "Tree", "Turnip", "Duck", "Wolf", "Cat", "Bird", "Fish", "Spider",
+            "Cockroach", "Brain", "Community", "Cross", "Money", "Vampire", "Sponge", "Church", "Butter", "Book",
+            "Paper", "Cloud", "Airplane", "Moon", "Grass", "Film", "Toilet", "Air", "Planet", "Guitar",
+            "Bowl", "Cup", "Beer", "Rain", "Water", "TV", "Rainbow", "UFO", "Alien", "Prayer",
+            "Mountain", "Satan", "Dragon", "Diamond", "Platinum", "Gold", "Devil", "Fence", "Video Game", "Math",
+            "Robot", "Heart", "Electricity", "Lightning", "Medusa", "Power", "Laser", "Nuke", "Sky", "Tank", "Helicopter"
+        ];
+
+        // ============================================================================
+        // 2. MATRIX ALLOCATION BLOCK (Allocated exactly once to prevent SyntaxErrors)
+        // ============================================================================
+        const RPS_MATRIX = {};
+
+        for (let i = 1; i <= 101; i++) {
+            RPS_MATRIX[i] = {};
+            RPS_MATRIX[i][i] = "clashes evenly with"; // Global handler for draws
+        }
+        console.log("[DEBUG] Matrix allocation complete.");
 
 
-// ****************************************************************************
-// 3. PASTE ALL YOUR DEEPSEEK MATRIX ASSIGNMENT LINES DIRECTLY BELOW THIS LINE 
-// ****************************************************************************
-
-// RPS-101 Complete Lookup Matrix
+        // ****************************************************************************
+        // 3. PASTE ALL OF YOUR 5,000+ DEEPSEEK DATA LINES DIRECTLY BELOW THIS LINE
+        // ****************************************************************************
+        // RPS-101 Complete Lookup Matrix
 // Each array index corresponds to the item ID (1-101)
 // Array[itemId] returns the action verb when this item defeats that target
 // Array[itemId] = "ties with" for self-reference
@@ -5306,98 +5382,202 @@ RPS_MATRIX[101][49] = "flies over";    // Fish
 RPS_MATRIX[101][50] = "flies over";    // Spider
 
 // Export or use the complete matrix
-const RPS_101_MATRIX = RPS_MATRIX;  
+const RPS_101_MATRIX = RPS_MATRIX;
+        // --- DATA SAMPLES FOR FUNCTIONAL TESTING ---
+        RPS_MATRIX[1][2] = "outclasses";      
+        RPS_MATRIX[1][15] = "ignites";        
+        RPS_MATRIX[15][29] = "burns";          // Fire burns Monkey text match
+        RPS_MATRIX[101][1] = "drops";          
+        RPS_MATRIX[101][15] = "flies over";     
 
-// ****************************************************************************
-// *** END OF MATRIX PASTE ***
-// ****************************************************************************
+        // ****************************************************************************
+        // *** END OF DATA MATRIX LINES ***
+        // ****************************************************************************
 
 
-// ============================================================================
-// 4. GENERATE ALL 101 BUTTON INTERFACES IN THE LOBBY
-// ============================================================================
-const grid = document.getElementById("action-grid");
-for (let i = 1; i <= 101; i++) {
-    const btn = document.createElement("button");
-    btn.className = "item-btn";
-    btn.id = "btn-item-" + i;
-    btn.innerText = `${i}. ${rps101Items[i]}`;
-    btn.onclick = () => selectWeapon(i);
-    grid.appendChild(btn);
-}
-console.log("[DEBUG] Successfully created all 101 game selection buttons on screen.");
+        // ============================================================================
+        // 4. GENERATE MENU SELECTION BUTTONS FOR ALL 101 ITEMS
+        // ============================================================================
+        const grid = document.getElementById("action-grid");
+        for (let i = 1; i <= 101; i++) {
+            const btn = document.createElement("button");
+            btn.className = "item-btn";
+            btn.id = "btn-item-" + i;
+            btn.innerText = `${i}. ${rps101Items[i]}`;
+            btn.onclick = () => selectWeapon(i);
+            grid.appendChild(btn);
+        }
+        console.log("[DEBUG] Menu interface population complete.");
 
-// ============================================================================
-// 5. NETWORK ENGINE ROUTINES
-// ============================================================================
-const SERVER_URL = "https://backend-77yp.onrender.com"; 
-let socket;
-const statusBadge = document.getElementById("status");
+        // ============================================================================
+        // 5. NETWORK ENGINE AND SOCKET CONNECTION HANDLERS
+        // ============================================================================
+        const SERVER_URL = "https://backend-77yp.onrender.com"; 
+        let socket;
+        const statusBadge = document.getElementById("status");
 
-try {
-    console.log("[DEBUG] Connecting to Socket.io endpoint at:", SERVER_URL);
-    socket = io(SERVER_URL, { 
-        transports: ['websocket', 'polling'],
-        upgrade: true
-    });
+        try {
+            console.log("[DEBUG] Requesting handshake from:", SERVER_URL);
+            socket = io(SERVER_URL, { 
+                transports: ['websocket', 'polling'],
+                upgrade: true
+            });
 
-    socket.on("connect", () => {
-        console.log("[DEBUG] Connected perfectly! Assigned Socket ID:", socket.id);
-        statusBadge.innerText = "Connected to Arena Server";
-        statusBadge.style.background = "#2ea84b";
-    });
+            socket.on("connect", () => {
+                console.log("[DEBUG] Handshake acknowledged. Core connected ID:", socket.id);
+                statusBadge.innerText = "Connected to Arena Server";
+                statusBadge.style.background = "#2ea84b";
+            });
 
-    socket.on("connect_error", (err) => {
-        console.warn("[DEBUG WARN] Connection failed. Retrying... Reason:", err.message);
-        statusBadge.innerText = "Connecting... Waking up Render node...";
-        statusBadge.style.background = "#e94560";
-    });
-} catch (e) {
-    console.error("[DEBUG CRITICAL ERROR] Pipeline initialization crash:", e);
-    statusBadge.innerText = "Script Initializer Failure";
-}
+            socket.on("connect_error", (err) => {
+                console.warn("[DEBUG] Connecting... waking server cluster node...");
+                statusBadge.innerText = "Connecting... Waking up Render node...";
+                statusBadge.style.background = "#e94560";
+            });
+        } catch (e) {
+            console.error("[DEBUG] Network engine failed to instantiate:", e);
+            statusBadge.innerText = "Pipeline Initializer Error";
+        }
 
-let activeRoomId = null;
-let mySelectedChoice = null;
+        let activeRoomId = null;
+        let mySelectedChoice = null;
 
-document.getElementById("btn-create").onclick = () => {
-    console.log("[DEBUG] Requesting server for new room lease...");
-    if(socket && socket.connected) socket.emit("create-room");
-    else alert("Backend connection offline. Give it a minute to wake up from its sleep phase on Render.");
-};
+        document.getElementById("btn-create").onclick = () => {
+            if(socket && socket.connected) socket.emit("create-room");
+            else alert("Backend connection offline. Give it a minute to spin up from sleep phase on Render.");
+        };
 
-socket.on("room-created", (roomId) => {
-    console.log("[DEBUG] Server assigned room lease ID:", roomId);
-    activeRoomId = roomId;
-    document.getElementById("lobby-controls").style.display = "none";
-    document.getElementById("match-info").style.display = "block";
-    document.getElementById("display-match-id").innerText = roomId;
-    statusBadge.innerText = "Lobby Ready - Waiting for Friend";
-});
+        socket.on("room-created", (roomId) => {
+            console.log("[DEBUG] Server assigned room:", roomId);
+            activeRoomId = roomId;
+            document.getElementById("lobby-controls").style.display = "none";
+            document.getElementById("match-info").style.display = "block";
+            document.getElementById("display-match-id").innerText = roomId;
+            statusBadge.innerText = "Lobby Ready - Waiting for Friend";
+        });
 
-document.getElementById("btn-join").onclick = () => {
-    const id = document.getElementById("input-join-id").value.trim();
-    console.log("[DEBUG] Attempting manual room join route to ID:", id);
-    if(id) {
-        if(socket && socket.connected) socket.emit("join-room", id);
-        else alert("Backend connection offline.");
-    }
-};
+        document.getElementById("btn-join").onclick = () => {
+            const id = document.getElementById("input-join-id").value.trim();
+            if(id) {
+                if(socket && socket.connected) socket.emit("join-room", id);
+                else alert("Backend connection offline.");
+            }
+        };
 
-socket.on("duel-initialized", (roomId) => {
-    console.log("[DEBUG] Match fully synchronized for room:", roomId);
-    activeRoomId = roomId;
-    document.getElementById("lobby-controls").style.display = "none";
-    document.getElementById("match-info").style.display = "block";
-    document.getElementById("display-match-id").innerText = roomId;
-    statusBadge.innerText = "Match Active - Choose a Weapon!";
-    statusBadge.style.background = "#00f2fe";
-    statusBadge.style.color = "#1a1a2e";
-});
+        socket.on("duel-initialized", (roomId) => {
+            console.log("[DEBUG] Matching layout sync completed for room:", roomId);
+            activeRoomId = roomId;
+            document.getElementById("lobby-controls").style.display = "none";
+            document.getElementById("match-info").style.display = "block";
+            document.getElementById("display-match-id").innerText = roomId;
+            statusBadge.innerText = "Match Active - Choose a Weapon!";
+            statusBadge.style.background = "#00f2fe";
+            statusBadge.style.color = "#1a1a2e";
+        });
 
-socket.on("error-msg", (msg) => { 
-    console.error("
-</script>
+        socket.on("error-msg", (msg) => { alert(msg); });
+        socket.on("peer-disconnected", () => {
+            alert("Opponent disconnected. Match closed.");
+            location.reload();
+        });
 
+        // ============================================================================
+        // 6. LOCAL INTERACTION DISPATCHERS
+        // ============================================================================
+        function selectWeapon(index) {
+            if (!activeRoomId) {
+                alert("Please Host or Join a match lobby first!");
+                return;
+            }
+            
+            mySelectedChoice = index;
+            document.getElementById("my-choice-display").innerText = rps101Items[index];
+            document.getElementById("my-status").innerText = "LOCKED IN";
+            document.getElementById("my-status").style.color = "#00f2fe";
+
+            for(let k = 1; k <= 101; k++){
+                const targetBtn = document.getElementById("btn-item-" + k);
+                if(targetBtn) {
+                    if(k === index) targetBtn.classList.add("selected");
+                    else targetBtn.classList.remove("selected");
+                }
+            }
+
+            console.log(`[DEBUG] Transmitting selection index ${index} to backend room.`);
+            socket.emit("submit-move", { roomId: activeRoomId, choiceIdx: index });
+        }
+
+        socket.on("opponent-locked", () => {
+            document.getElementById("opp-status").innerText = "LOCKED IN";
+            document.getElementById("opp-status").style.color = "#e94560";
+        });
+
+        // ============================================================================
+        // 7. REAL-TIME GAME RESOLUTION LOGIC
+        // ============================================================================
+        socket.on("combat-resolved", (movesObj) => {
+            let myId = socket.id;
+            let oppId = Object.keys(movesObj).find(id => id !== myId);
+
+            let myMove = movesObj[myId];
+            let oppMove = movesObj[oppId];
+
+            document.getElementById("opp-choice-display").innerText = rps101Items[oppMove];
+            document.getElementById("opp-status").innerText = "Revealed";
+
+            const resultBanner = document.getElementById("result-banner");
+            const flavorBanner = document.getElementById("flavor-banner");
+
+            if (myMove === oppMove) {
+                resultBanner.innerText = "IT'S A DRAW!";
+                resultBanner.style.color = "#ffdf00";
+                flavorBanner.innerText = `${rps101Items[myMove]} ${RPS_MATRIX[myMove][oppMove]} ${rps101Items[oppMove]}`;
+            } else {
+                let distance = (oppMove - myMove + 101) % 101;
+                let iWon = (distance <= 50);
+
+                if (iWon) {
+                    resultBanner.innerText = "YOU WIN THE ROUND!";
+                    resultBanner.style.color = "#00f2fe";
+                    
+                    let verbAction = RPS_MATRIX[myMove]?.[oppMove];
+                    if (!verbAction || verbAction === "") verbAction = "defeats";
+                    
+                    flavorBanner.innerText = `${rps101Items[myMove]} ${verbAction} ${rps101Items[oppMove]}`;
+                } else {
+                    resultBanner.innerText = "OPPONENT WINS THE ROUND!";
+                    resultBanner.style.color = "#e94560";
+                    
+                    let verbAction = RPS_MATRIX[oppMove]?.[myMove];
+                    if (!verbAction || verbAction === "") verbAction = "defeats";
+                    
+                    flavorBanner.innerText = `${rps101Items[oppMove]} ${verbAction} ${rps101Items[myMove]}`;
+                }
+            }
+            document.getElementById("btn-reset").style.display = "inline-block";
+        });
+
+        socket.on("rematch-reset", () => {
+            document.getElementById("btn-reset").style.display = "none";
+            document.getElementById("result-banner").innerText = "";
+            document.getElementById("flavor-banner").innerText = "";
+            document.getElementById("my-choice-display").innerText = "Choosing...";
+            document.getElementById("opp-choice-display").innerText = "???";
+            document.getElementById("my-status").innerText = "Ready to lock in";
+            document.getElementById("my-status").style.color = "#aaa";
+            document.getElementById("opp-status").innerText = "Waiting...";
+            document.getElementById("opp-status").style.color = "#aaa";
+            
+            for(let k = 1; k <= 101; k++){
+                const targetBtn = document.getElementById("btn-item-" + k);
+                if(targetBtn) targetBtn.classList.remove("selected");
+            }
+            mySelectedChoice = null;
+        });
+
+        document.getElementById("btn-reset").onclick = () => {
+            socket.emit("request-rematch", activeRoomId);
+        };
+    </script>
 </body>
 </html>
