@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPS 101 Multiplayer Matrix (Socket.io)</title>
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="https://backend-77yp.onrender.com/socket.io/socket.io.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -50,7 +50,7 @@
             <div id="match-info" style="display:none; margin-top: 10px;">
                 <p>Share this Match ID with your friend: <strong id="display-match-id" style="color:#00f2fe; font-size: 18px;">-</strong></p>
             </div>
-            <div id="status" class="status-badge">Connecting to server node...</div>
+            <div id="status" class="status-badge">Connecting to server node... (Render may take up to 60s to spin up)</div>
         </div>
 
         <div class="display-area">
@@ -76,11 +76,8 @@
     </div>
 
     <script>
-        // ============================================================================
-        // 1. GAME DATA: Item Names Mapping (Matches 1-101 ID order)
-        // ============================================================================
         const rps101Items = [
-            "", // Index 0 left blank so item #1 is index 1
+            "", 
             "Dynamite", "Tornado", "Quicksand", "Pit", "Chain", "Gun", "Law", "Whip", "Sword", "Rock",
             "Death", "Wall", "Sun", "Camera", "Fire", "Chainsaw", "School", "Scissors", "Poison", "Cage",
             "Axe", "Peace", "Computer", "Castle", "Snake", "Blood", "Porcupine", "Vulture", "Monkey", "King",
@@ -93,13 +90,9 @@
             "Robot", "Heart", "Electricity", "Lightning", "Medusa", "Power", "Laser", "Nuke", "Sky", "Tank", "Helicopter"
         ];
 
-        // ============================================================================
-        // 2. THE MASTER DATA MATRIX (RPS_MATRIX[102][102])
-        // ============================================================================
         const RPS_MATRIX = Array(102).fill(null).map(() => Array(102).fill(""));
 
-        // *** PASTE ALL DEEPSEEK GENERATED ARRAY DATA BELOW THIS LINE ***
-        // (Example for Helicopter #101 is pre-loaded)
+        // *** PASTE ALL YOUR DEEPSEEK MATRIX LINES BELOW HERE ***
        // RPS-101 Complete Lookup Matrix
 // Each array index corresponds to the item ID (1-101)
 // Array[itemId] returns the action verb when this item defeats that target
@@ -5372,17 +5365,19 @@ RPS_MATRIX[101][49] = "flies over";    // Fish
 RPS_MATRIX[101][50] = "flies over";    // Spider
 
 // Export or use the complete matrix
-const RPS_101_MATRIX = RPS_MATRIX;
+const RPS_101_MATRIX = RPS_MATRIX; 
+        // *** END OF MATRIX PASTE ***
 
-
-        // ============================================================================
-        // 3. SERVER CONNECTION MECHANICS (Render / Socket.io)
-        // ============================================================================
         const SERVER_URL = "https://backend-77yp.onrender.com"; 
-        let socket = io(SERVER_URL, { autoConnect: true });
+        
+        // CHANGED: Added robust polling transports array parameters to bypass strict CORS blocks
+        let socket = io(SERVER_URL, { 
+            transports: ['websocket', 'polling'],
+            upgrade: true
+        });
+
         let activeRoomId = null;
         let mySelectedChoice = null;
-
         const statusBadge = document.getElementById("status");
 
         socket.on("connect", () => {
@@ -5390,14 +5385,12 @@ const RPS_101_MATRIX = RPS_MATRIX;
             statusBadge.style.background = "#2ea84b";
         });
 
-        socket.on("connect_error", () => {
-            statusBadge.innerText = "Offline - Reconnecting...";
+        socket.on("connect_error", (err) => {
+            statusBadge.innerText = "Connecting... Waking up Render node...";
             statusBadge.style.background = "#e94560";
+            console.log("Connection error context:", err);
         });
 
-        // ============================================================================
-        // 4. LOBBY INTERACTION MECHANICS (Matches server.js implementation)
-        // ============================================================================
         document.getElementById("btn-create").onclick = () => {
             socket.emit("create-room");
         };
@@ -5425,18 +5418,12 @@ const RPS_101_MATRIX = RPS_MATRIX;
             statusBadge.style.color = "#1a1a2e";
         });
 
-        socket.on("error-msg", (msg) => {
-            alert(msg);
-        });
-
+        socket.on("error-msg", (msg) => { alert(msg); });
         socket.on("peer-disconnected", () => {
             alert("Opponent disconnected. Match closed.");
             location.reload();
         });
 
-        // ============================================================================
-        // 5. GAME PLAYGRID DESIGN SETUP
-        // ============================================================================
         const grid = document.getElementById("action-grid");
         for (let i = 1; i <= 101; i++) {
             const btn = document.createElement("button");
@@ -5462,7 +5449,6 @@ const RPS_101_MATRIX = RPS_MATRIX;
                 else b.classList.remove("selected");
             });
 
-            // Send custom choice IDX integer parameter matching server schema
             socket.emit("submit-move", { roomId: activeRoomId, choiceIdx: index });
         }
 
@@ -5471,9 +5457,6 @@ const RPS_101_MATRIX = RPS_MATRIX;
             document.getElementById("opp-status").style.color = "#e94560";
         });
 
-        // ============================================================================
-        // 6. REAL-TIME RESOLUTION ENGINE (Parsing dynamic object keyed by Socket IDs)
-        // ============================================================================
         socket.on("combat-resolved", (movesObj) => {
             let myId = socket.id;
             let oppId = Object.keys(movesObj).find(id => id !== myId);
@@ -5487,41 +5470,31 @@ const RPS_101_MATRIX = RPS_MATRIX;
             const resultBanner = document.getElementById("result-banner");
             const flavorBanner = document.getElementById("flavor-banner");
 
-            // Scenario A: Clean Structural Tie
             if (myMove === oppMove) {
                 resultBanner.innerText = "IT'S A DRAW!";
                 resultBanner.style.color = "#ffdf00";
                 flavorBanner.innerText = `${rps101Items[myMove]} clashes evenly with ${rps101Items[oppMove]}`;
-            } 
-            
-            // Scenario B: Cyclic Math Rules Evaluation
-            else {
+            } else {
                 let distance = (oppMove - myMove + 101) % 101;
                 let iWon = (distance <= 50);
 
                 if (iWon) {
                     resultBanner.innerText = "YOU WIN THE ROUND!";
                     resultBanner.style.color = "#00f2fe";
-                    
                     let verbAction = RPS_MATRIX[myMove][oppMove];
                     if (!verbAction || verbAction === "") verbAction = "defeats";
-                    
                     flavorBanner.innerText = `${rps101Items[myMove]} ${verbAction} ${rps101Items[oppMove]}`;
                 } else {
                     resultBanner.innerText = "OPPONENT WINS THE ROUND!";
                     resultBanner.style.color = "#e94560";
-                    
                     let verbAction = RPS_MATRIX[oppMove][myMove];
                     if (!verbAction || verbAction === "") verbAction = "defeats";
-                    
                     flavorBanner.innerText = `${rps101Items[oppMove]} ${verbAction} ${rps101Items[myMove]}`;
                 }
             }
-
             document.getElementById("btn-reset").style.display = "inline-block";
         });
 
-        // Rematch handling
         socket.on("rematch-reset", () => {
             document.getElementById("btn-reset").style.display = "none";
             document.getElementById("result-banner").innerText = "";
