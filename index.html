@@ -151,7 +151,11 @@
                 return;
             }
 
-            socket = io(SERVER_URL);
+            // Fix 3: Force secure web socket routing options to match Render's environment
+            socket = io(SERVER_URL, {
+                transports: ['websocket', 'polling'],
+                secure: true
+            });
 
             socket.on('connect', () => {
                 updateStatus("Connected to relay server. Lobby Ready.", "#10b981");
