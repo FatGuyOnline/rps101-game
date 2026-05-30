@@ -50,7 +50,7 @@
             <div id="match-info" style="display:none; margin-top: 10px;">
                 <p>Share this Match ID with your friend: <strong id="display-match-id" style="color:#00f2fe; font-size: 18px;">-</strong></p>
             </div>
-            <div id="status" class="status-badge">Connecting to server node... (Render may take up to 60s to spin up)</div>
+            <div id="status" class="status-badge">Connecting to server node...</div>
         </div>
 
         <div class="display-area">
@@ -76,8 +76,10 @@
     </div>
 
     <script>
+        console.log("[DEBUG] Game scripts initializing...");
+
         // ============================================================================
-        // 1. GAME DATA MAP (Index 0 is empty so weapon numbers match indexes directly)
+        // 1. FULL LIST OF ALL 101 ITEMS
         // ============================================================================
         const rps101Items = [
             "", 
@@ -93,19 +95,15 @@
             "Robot", "Heart", "Electricity", "Lightning", "Medusa", "Power", "Laser", "Nuke", "Sky", "Tank", "Helicopter"
         ];
 
-        // List of item indexes we want to actually render in the grid buttons
-        const itemsToRender = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 101];
-
         // ============================================================================
-        // 2. SAFE MULTI-DIMENSIONAL MATRIX STORAGE ALLOCATION
+        // 2. SAFE MATRIX ALLOCATION BLOCK (Prevents crashes)
         // ============================================================================
         const RPS_MATRIX = {};
         for (let i = 1; i <= 101; i++) {
             RPS_MATRIX[i] = {};
         }
+        console.log("[DEBUG] Multi-dimensional lookup matrix safely allocated.");
 
-        // --- SAMPLE POPULATED DATA STRINGS MATRIX ---
-        // Dynamite (1) wins
         // RPS-101 Complete Lookup Matrix
 // Each array index corresponds to the item ID (1-101)
 // Array[itemId] returns the action verb when this item defeats that target
@@ -5380,54 +5378,62 @@ RPS_MATRIX[101][50] = "flies over";    // Spider
 // Export or use the complete matrix
 const RPS_101_MATRIX = RPS_MATRIX;
 
+
         // ============================================================================
-        // 3. GENERATE ACTION MENU BUTTONS ON SCREEN
+        // 3. GENERATE ALL 101 BUTTON INTERFACES IN THE LOBBY
         // ============================================================================
         const grid = document.getElementById("action-grid");
-        itemsToRender.forEach(i => {
+        for (let i = 1; i <= 101; i++) {
             const btn = document.createElement("button");
             btn.className = "item-btn";
+            btn.id = "btn-item-" + i;
             btn.innerText = `${i}. ${rps101Items[i]}`;
             btn.onclick = () => selectWeapon(i);
             grid.appendChild(btn);
-        });
+        }
+        console.log("[DEBUG] Successfully created all 101 game selection buttons on screen.");
 
         // ============================================================================
-        // 4. NETWORK CLIENT PIPELINE ENGINE (Render Link Setup)
+        // 4. NETWORK ENGINE ROUTINES
         // ============================================================================
         const SERVER_URL = "https://backend-77yp.onrender.com"; 
         let socket;
         const statusBadge = document.getElementById("status");
 
         try {
+            console.log("[DEBUG] Connecting to Socket.io endpoint at:", SERVER_URL);
             socket = io(SERVER_URL, { 
                 transports: ['websocket', 'polling'],
                 upgrade: true
             });
 
             socket.on("connect", () => {
+                console.log("[DEBUG] Connected perfectly! Assigned Socket ID:", socket.id);
                 statusBadge.innerText = "Connected to Arena Server";
                 statusBadge.style.background = "#2ea84b";
             });
 
             socket.on("connect_error", (err) => {
+                console.warn("[DEBUG WARN] Connection failed. Retrying... Reason:", err.message);
                 statusBadge.innerText = "Connecting... Waking up Render node...";
                 statusBadge.style.background = "#e94560";
             });
         } catch (e) {
-            statusBadge.innerText = "Script Core Initializer Error";
-            console.error(e);
+            console.error("[DEBUG CRITICAL ERROR] Pipeline initialization crash:", e);
+            statusBadge.innerText = "Script Initializer Failure";
         }
 
         let activeRoomId = null;
         let mySelectedChoice = null;
 
         document.getElementById("btn-create").onclick = () => {
+            console.log("[DEBUG] Requesting server for new room lease...");
             if(socket && socket.connected) socket.emit("create-room");
-            else alert("Connecting to backend. Please wait a few seconds and try again.");
+            else alert("Backend connection offline. Give it a minute to sleep wake-up on Render.");
         };
 
         socket.on("room-created", (roomId) => {
+            console.log("[DEBUG] Server assigned room lease ID:", roomId);
             activeRoomId = roomId;
             document.getElementById("lobby-controls").style.display = "none";
             document.getElementById("match-info").style.display = "block";
@@ -5437,13 +5443,15 @@ const RPS_101_MATRIX = RPS_MATRIX;
 
         document.getElementById("btn-join").onclick = () => {
             const id = document.getElementById("input-join-id").value.trim();
+            console.log("[DEBUG] Attempting manual room join route to ID:", id);
             if(id) {
                 if(socket && socket.connected) socket.emit("join-room", id);
-                else alert("Connecting to backend. Please wait a few seconds and try again.");
+                else alert("Backend connection offline.");
             }
         };
 
         socket.on("duel-initialized", (roomId) => {
+            console.log("[DEBUG] Match fully synchronized for room:", roomId);
             activeRoomId = roomId;
             document.getElementById("lobby-controls").style.display = "none";
             document.getElementById("match-info").style.display = "block";
@@ -5453,14 +5461,19 @@ const RPS_101_MATRIX = RPS_MATRIX;
             statusBadge.style.color = "#1a1a2e";
         });
 
-        socket.on("error-msg", (msg) => { alert(msg); });
+        socket.on("error-msg", (msg) => { 
+            console.error("[DEBUG SERVER ERROR ALERT]:", msg);
+            alert(msg); 
+        });
+
         socket.on("peer-disconnected", () => {
+            console.log("[DEBUG] Peer disconnected prematurely. Resetting active match state.");
             alert("Opponent disconnected. Match closed.");
             location.reload();
         });
 
         // ============================================================================
-        // 5. INPUT SELECTION LOGIC
+        // 5. INPUT DISPATCHERS
         // ============================================================================
         function selectWeapon(index) {
             if (!activeRoomId) {
@@ -5468,33 +5481,43 @@ const RPS_101_MATRIX = RPS_MATRIX;
                 return;
             }
             
+            console.log(`[DEBUG] Registering local selection choice index: ${index} (${rps101Items[index]})`);
             mySelectedChoice = index;
             document.getElementById("my-choice-display").innerText = rps101Items[index];
             document.getElementById("my-status").innerText = "LOCKED IN";
             document.getElementById("my-status").style.color = "#00f2fe";
 
-            document.querySelectorAll(".item-btn").forEach((b) => {
-                if(parseInt(b.innerText) === index) b.classList.add("selected");
-                else b.classList.remove("selected");
-            });
+            for(let k = 1; k <= 101; k++){
+                const targetBtn = document.getElementById("btn-item-" + k);
+                if(targetBtn) {
+                    if(k === index) targetBtn.classList.add("selected");
+                    else targetBtn.classList.remove("selected");
+                }
+            }
 
+            console.log("[DEBUG] Dispatching encrypted choice packet to server room registry...");
             socket.emit("submit-move", { roomId: activeRoomId, choiceIdx: index });
         }
 
         socket.on("opponent-locked", () => {
+            console.log("[DEBUG] Server notification: Opponent has selected and sealed their choice.");
             document.getElementById("opp-status").innerText = "LOCKED IN";
             document.getElementById("opp-status").style.color = "#e94560";
         });
 
         // ============================================================================
-        // 6. REAL-TIME RESOLUTION ENGINE (Fixed Attacker vs Defender Lookup System)
+        // 6. DYNAMIC MATCH EVALUATOR
         // ============================================================================
         socket.on("combat-resolved", (movesObj) => {
+            console.log("[DEBUG] Processing round calculation matrix inputs:", movesObj);
+            
             let myId = socket.id;
             let oppId = Object.keys(movesObj).find(id => id !== myId);
 
             let myMove = movesObj[myId];
             let oppMove = movesObj[oppId];
+
+            console.log(`[DEBUG] Parsing evaluation strings: Mine (${myMove}), Opponent (${oppMove})`);
 
             document.getElementById("opp-choice-display").innerText = rps101Items[oppMove];
             document.getElementById("opp-status").innerText = "Revealed";
@@ -5503,30 +5526,36 @@ const RPS_101_MATRIX = RPS_MATRIX;
             const flavorBanner = document.getElementById("flavor-banner");
 
             if (myMove === oppMove) {
+                console.log("[DEBUG] Match outcome: Tie.");
                 resultBanner.innerText = "IT'S A DRAW!";
                 resultBanner.style.color = "#ffdf00";
                 flavorBanner.innerText = `${rps101Items[myMove]} clashes evenly with ${rps101Items[oppMove]}`;
             } else {
-                // Calculate cyclic balance
                 let distance = (oppMove - myMove + 101) % 101;
                 let iWon = (distance <= 50);
 
                 if (iWon) {
+                    console.log("[DEBUG] Match outcome: Player 1 Wins.");
                     resultBanner.innerText = "YOU WIN THE ROUND!";
                     resultBanner.style.color = "#00f2fe";
                     
-                    // Pull explicit phrasing string out using absolute [Attacker][Defender] structure
                     let verbAction = RPS_MATRIX[myMove]?.[oppMove];
-                    if (!verbAction || verbAction === "") verbAction = "defeats";
+                    if (!verbAction || verbAction === "") {
+                        console.warn(`[DEBUG WARN] Phrasing missing for row configuration assignment RPS_MATRIX[${myMove}][${oppMove}]`);
+                        verbAction = "defeats";
+                    }
                     
                     flavorBanner.innerText = `${rps101Items[myMove]} ${verbAction} ${rps101Items[oppMove]}`;
                 } else {
+                    console.log("[DEBUG] Match outcome: Opponent Wins.");
                     resultBanner.innerText = "OPPONENT WINS THE ROUND!";
                     resultBanner.style.color = "#e94560";
                     
-                    // Pull explicit phrasing string out from opponent's view structure
                     let verbAction = RPS_MATRIX[oppMove]?.[myMove];
-                    if (!verbAction || verbAction === "") verbAction = "defeats";
+                    if (!verbAction || verbAction === "") {
+                        console.warn(`[DEBUG WARN] Phrasing missing for row configuration assignment RPS_MATRIX[${oppMove}][${myMove}]`);
+                        verbAction = "defeats";
+                    }
                     
                     flavorBanner.innerText = `${rps101Items[oppMove]} ${verbAction} ${rps101Items[myMove]}`;
                 }
@@ -5535,6 +5564,7 @@ const RPS_101_MATRIX = RPS_MATRIX;
         });
 
         socket.on("rematch-reset", () => {
+            console.log("[DEBUG] Rematch acknowledged. Purging UI tracking states...");
             document.getElementById("btn-reset").style.display = "none";
             document.getElementById("result-banner").innerText = "";
             document.getElementById("flavor-banner").innerText = "";
@@ -5544,11 +5574,16 @@ const RPS_101_MATRIX = RPS_MATRIX;
             document.getElementById("my-status").style.color = "#aaa";
             document.getElementById("opp-status").innerText = "Waiting...";
             document.getElementById("opp-status").style.color = "#aaa";
-            document.querySelectorAll(".item-btn").forEach(b => b.classList.remove("selected"));
+            
+            for(let k = 1; k <= 101; k++){
+                const targetBtn = document.getElementById("btn-item-" + k);
+                if(targetBtn) targetBtn.classList.remove("selected");
+            }
             mySelectedChoice = null;
         });
 
         document.getElementById("btn-reset").onclick = () => {
+            console.log("[DEBUG] Requesting a round reset sequence...");
             socket.emit("request-rematch", activeRoomId);
         };
     </script>
