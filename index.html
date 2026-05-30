@@ -1,5 +1,5 @@
 <script>
-        console.log("[DEBUG] Game scripts initializing...");
+        console.log("[DEBUG 🚀] Game engine initializing...");
 
         const rps101Items = [
             "", 
@@ -15,21 +15,34 @@
             "Robot", "Heart", "Electricity", "Lightning", "Medusa", "Power", "Laser", "Nuke", "Sky", "Tank", "Helicopter"
         ];
 
-        // Global data matrix initialized empty
         let RPS_MATRIX = {};
 
-        // 🚀 FETCH THE FUNNY REASONS FROM THE JSON FILE
+        // ============================================================================
+        // 🚀 VERBOSE JSON DATA LOADER & DEBUGGER
+        // ============================================================================
+        console.log("[DEBUG 📂] Attempting to stream matrix.json pipeline...");
+        
         fetch('matrix.json')
             .then(response => {
-                if (!response.ok) throw new Error("JSON file not found or corrupted.");
-                return response.json();
+                console.log("[DEBUG 📂] Server responded with HTTP status:", response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP network error! Status: ${response.status}`);
+                }
+                return response.text(); // Read as raw text first to isolate parsing errors
             })
-            .then(data => {
-                RPS_MATRIX = data;
-                console.log("[DEBUG] Custom flavor text matrix successfully loaded!");
+            .then(rawText => {
+                try {
+                    RPS_MATRIX = JSON.parse(rawText);
+                    console.log("[DEBUG ✅] SUCCESS: Custom flavor text matrix successfully loaded parsed into memory!");
+                    console.log("[DEBUG 📊] Total tracked weapons in JSON:", Object.keys(RPS_MATRIX).length);
+                } catch (jsonErr) {
+                    console.error("%c[CRITICAL JSON ERROR ❌] Your matrix.json file has invalid formatting!", "color: red; font-weight: bold; font-size: 14px;");
+                    console.error("[CRITICAL JSON ERROR ❌] System Message:", jsonErr.message);
+                    console.warn("[FIX TIP 💡] Check the very end of your matrix.json file or where you last pasted. Ensure all open quotes match and no trailing commas exist!");
+                }
             })
-            .catch(err => {
-                console.error("[ERROR] Failed to load matrix.json:", err);
+            .catch(networkErr => {
+                console.error("[NETWORK ERROR 🌐] Could not locate or read matrix.json:", networkErr.message);
             });
 
         // ============================================================================
@@ -44,6 +57,7 @@
             btn.onclick = () => selectWeapon(i);
             grid.appendChild(btn);
         }
+        console.log("[DEBUG 🎯] Generated 101 selection nodes on layout grid.");
 
         // ============================================================================
         // NETWORK ENGINE AND SOCKET CONNECTION HANDLERS
@@ -53,16 +67,22 @@
         const statusBadge = document.getElementById("status");
 
         try {
+            console.log("[DEBUG 📡] Connecting to socket node gateway at:", SERVER_URL);
             socket = io(SERVER_URL, { transports: ['websocket', 'polling'], upgrade: true });
+            
             socket.on("connect", () => {
+                console.log("[DEBUG 📡] WebSocket Handshake complete. Assigned Socket ID:", socket.id);
                 statusBadge.innerText = "Connected to Arena Server";
                 statusBadge.style.background = "#2ea84b";
             });
-            socket.on("connect_error", () => {
+            
+            socket.on("connect_error", (err) => {
+                console.warn("[DEBUG 📡] Waiting on background cluster initialization...");
                 statusBadge.innerText = "Connecting... Waking up Render node...";
                 statusBadge.style.background = "#e94560";
             });
         } catch (e) {
+            console.error("[DEBUG ❌] Critical initialization failure in Network Core:", e);
             statusBadge.innerText = "Pipeline Initializer Error";
         }
 
@@ -70,11 +90,13 @@
         let mySelectedChoice = null;
 
         document.getElementById("btn-create").onclick = () => {
+            console.log("[LOBBY 🕹️] Create Room button triggered.");
             if(socket && socket.connected) socket.emit("create-room");
             else alert("Backend connection offline.");
         };
 
         socket.on("room-created", (roomId) => {
+            console.log("[LOBBY 🕹️] Host access granted. Room generated ID:", roomId);
             activeRoomId = roomId;
             document.getElementById("lobby-controls").style.display = "none";
             document.getElementById("match-info").style.display = "block";
@@ -84,10 +106,12 @@
 
         document.getElementById("btn-join").onclick = () => {
             const id = document.getElementById("input-join-id").value.trim();
+            console.log("[LOBBY 🕹️] Attempting join command sequence for target room ID:", id);
             if(id && socket && socket.connected) socket.emit("join-room", id);
         };
 
         socket.on("duel-initialized", (roomId) => {
+            console.log("[LOBBY 🕹️] Room handshake confirmed! Game loop active for room:", roomId);
             activeRoomId = roomId;
             document.getElementById("lobby-controls").style.display = "none";
             document.getElementById("match-info").style.display = "block";
@@ -97,15 +121,23 @@
             statusBadge.style.color = "#1a1a2e";
         });
 
-        socket.on("error-msg", (msg) => { alert(msg); });
-        socket.on("peer-disconnected", () => { location.reload(); });
+        socket.on("error-msg", (msg) => { console.warn("[SERVER REJECTION ⚠️]", msg); alert(msg); });
+        socket.on("peer-disconnected", () => { 
+            console.warn("[GAME LOOP 🛑] Peer link severed. Resetting state environment.");
+            alert("Opponent disconnected. Match closed."); 
+            location.reload(); 
+        });
 
         function selectWeapon(index) {
             if (!activeRoomId) {
+                console.warn("[GAME LOOP ⚠️] Weapon selection blocked: user not assigned to an active room room node.");
                 alert("Please Host or Join a match lobby first!");
                 return;
             }
+            
             mySelectedChoice = index;
+            console.log(`[DEBUG ⚔️] Transmitting weapon selection index ${index} (${rps101Items[index]}) to room ${activeRoomId}`);
+            
             document.getElementById("my-choice-display").innerText = rps101Items[index];
             document.getElementById("my-status").innerText = "LOCKED IN";
             document.getElementById("my-status").style.color = "#00f2fe";
@@ -121,6 +153,7 @@
         }
 
         socket.on("opponent-locked", () => {
+            console.log("[GAME LOOP 📡] Server message received: Peer choice has been locked.");
             document.getElementById("opp-status").innerText = "LOCKED IN";
             document.getElementById("opp-status").style.color = "#e94560";
         });
@@ -129,6 +162,8 @@
         // REAL-TIME GAME RESOLUTION LOGIC
         // ============================================================================
         socket.on("combat-resolved", (movesObj) => {
+            console.log("[GAME LOOP ⚔️] All actions resolved. Computing battle frame payload...", movesObj);
+            
             let myId = socket.id;
             let oppId = Object.keys(movesObj).find(id => id !== myId);
 
@@ -156,18 +191,24 @@
                     resultBanner.innerText = "YOU WIN THE ROUND!";
                     resultBanner.style.color = "#00f2fe";
                     
-                    // Grab custom reason from JSON lookup
                     let verbAction = RPS_MATRIX[myMoveName]?.[oppMoveName];
-                    if (!verbAction) verbAction = "defeats";
+                    console.log(`[DEBUG ⚙️] Lookup for [${myMoveName}][${oppMoveName}] returned: "${verbAction}"`);
+                    if (!verbAction) {
+                        console.warn(`[DEBUG ⚙️] Flavor text missing for [${myMoveName}][${oppMoveName}]. Defaulting to safety text.`);
+                        verbAction = "defeats";
+                    }
                     
                     flavorBanner.innerText = `${myMoveName} ${verbAction} ${oppMoveName}`;
                 } else {
                     resultBanner.innerText = "OPPONENT WINS THE ROUND!";
                     resultBanner.style.color = "#e94560";
                     
-                    // Grab custom reason from JSON lookup
                     let verbAction = RPS_MATRIX[oppMoveName]?.[myMoveName];
-                    if (!verbAction) verbAction = "defeats";
+                    console.log(`[DEBUG ⚙️] Lookup for [${oppMoveName}][${myMoveName}] returned: "${verbAction}"`);
+                    if (!verbAction) {
+                        console.warn(`[DEBUG ⚙️] Flavor text missing for [${oppMoveName}][${myMoveName}]. Defaulting to safety text.`);
+                        verbAction = "defeats";
+                    }
                     
                     flavorBanner.innerText = `${oppMoveName} ${verbAction} ${myMoveName}`;
                 }
@@ -176,6 +217,7 @@
         });
 
         socket.on("rematch-reset", () => {
+            console.log("[GAME LOOP 🔄] Round values wiped. Matchboard resetting...");
             document.getElementById("btn-reset").style.display = "none";
             document.getElementById("result-banner").innerText = "";
             document.getElementById("flavor-banner").innerText = "";
@@ -194,6 +236,7 @@
         });
 
         document.getElementById("btn-reset").onclick = () => {
+            console.log("[GAME LOOP 🔄] Requesting match continuation framing from server.");
             socket.emit("request-rematch", activeRoomId);
         };
     </script>
