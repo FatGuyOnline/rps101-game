@@ -110,12 +110,8 @@
         // ****************************************************************************
         // 3. PASTE ALL OF YOUR 5,000+ DEEPSEEK DATA LINES DIRECTLY BELOW THIS LINE
         // ****************************************************************************
-        // RPS-101 Complete Lookup Matrix
-// Each array index corresponds to the item ID (1-101)
-// Array[itemId] returns the action verb when this item defeats that target
-// Array[itemId] = "ties with" for self-reference
-// Empty entries default to "is defeated by"
-
+        
+        
 // 1 - DYNAMITE (ID: 1)
 RPS_MATRIX[1][2] = "outclasses";      // Tornado
 RPS_MATRIX[1][3] = "clears";          // Quicksand
@@ -5369,12 +5365,9 @@ RPS_MATRIX[101][50] = "flies over";    // Spider
 
 // Export or use the complete matrix
 const RPS_101_MATRIX = RPS_MATRIX;
-        // --- DATA SAMPLES FOR FUNCTIONAL TESTING ---
-        RPS_MATRIX[1][2] = "outclasses";      
-        RPS_MATRIX[1][15] = "ignites";        
-        RPS_MATRIX[15][29] = "burns";          // Fire burns Monkey text match
-        RPS_MATRIX[101][1] = "drops";          
-        RPS_MATRIX[101][15] = "flies over";     
+
+
+    
 
         // ****************************************************************************
         // *** END OF DATA MATRIX LINES ***
