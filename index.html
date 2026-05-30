@@ -5492,16 +5492,20 @@ const RPS_101_MATRIX = RPS_MATRIX;
         });
 
         // ============================================================================
-        // 7. REAL-TIME GAME RESOLUTION LOGIC
+        // 7. REAL-TIME GAME RESOLUTION LOGIC (Updated for Name-Based Data Lookups)
         // ============================================================================
         socket.on("combat-resolved", (movesObj) => {
             let myId = socket.id;
             let oppId = Object.keys(movesObj).find(id => id !== myId);
 
-            let myMove = movesObj[myId];
-            let oppMove = movesObj[oppId];
+            let myMove = movesObj[myId]; // This is a number (e.g., 15)
+            let oppMove = movesObj[oppId]; // This is a number (e.g., 29)
 
-            document.getElementById("opp-choice-display").innerText = rps101Items[oppMove];
+            // Convert numbers to actual text names for the lookup
+            let myMoveName = rps101Items[myMove];   // e.g., "Fire"
+            let oppMoveName = rps101Items[oppMove]; // e.g., "Monkey"
+
+            document.getElementById("opp-choice-display").innerText = oppMoveName;
             document.getElementById("opp-status").innerText = "Revealed";
 
             const resultBanner = document.getElementById("result-banner");
@@ -5510,7 +5514,10 @@ const RPS_101_MATRIX = RPS_MATRIX;
             if (myMove === oppMove) {
                 resultBanner.innerText = "IT'S A DRAW!";
                 resultBanner.style.color = "#ffdf00";
-                flavorBanner.innerText = `${rps101Items[myMove]} ${RPS_MATRIX[myMove][oppMove]} ${rps101Items[oppMove]}`;
+                
+                // Try looking up the draw text by name, fallback to a standard sentence
+                let drawAction = RPS_MATRIX[myMoveName]?.[oppMoveName] || "clashes evenly with";
+                flavorBanner.innerText = `${myMoveName} ${drawAction} ${oppMoveName}`;
             } else {
                 let distance = (oppMove - myMove + 101) % 101;
                 let iWon = (distance <= 50);
@@ -5519,44 +5526,21 @@ const RPS_101_MATRIX = RPS_MATRIX;
                     resultBanner.innerText = "YOU WIN THE ROUND!";
                     resultBanner.style.color = "#00f2fe";
                     
-                    let verbAction = RPS_MATRIX[myMove]?.[oppMove];
+                    // Look up using the names (e.g., RPS_MATRIX["Fire"]["Monkey"])
+                    let verbAction = RPS_MATRIX[myMoveName]?.[oppMoveName];
                     if (!verbAction || verbAction === "") verbAction = "defeats";
                     
-                    flavorBanner.innerText = `${rps101Items[myMove]} ${verbAction} ${rps101Items[oppMove]}`;
+                    flavorBanner.innerText = `${myMoveName} ${verbAction} ${oppMoveName}`;
                 } else {
                     resultBanner.innerText = "OPPONENT WINS THE ROUND!";
                     resultBanner.style.color = "#e94560";
                     
-                    let verbAction = RPS_MATRIX[oppMove]?.[myMove];
+                    // Look up using the names (e.g., RPS_MATRIX["Monkey"]["Fire"])
+                    let verbAction = RPS_MATRIX[oppMoveName]?.[myMoveName];
                     if (!verbAction || verbAction === "") verbAction = "defeats";
                     
-                    flavorBanner.innerText = `${rps101Items[oppMove]} ${verbAction} ${rps101Items[myMove]}`;
+                    flavorBanner.innerText = `${oppMoveName} ${verbAction} ${myMoveName}`;
                 }
             }
             document.getElementById("btn-reset").style.display = "inline-block";
         });
-
-        socket.on("rematch-reset", () => {
-            document.getElementById("btn-reset").style.display = "none";
-            document.getElementById("result-banner").innerText = "";
-            document.getElementById("flavor-banner").innerText = "";
-            document.getElementById("my-choice-display").innerText = "Choosing...";
-            document.getElementById("opp-choice-display").innerText = "???";
-            document.getElementById("my-status").innerText = "Ready to lock in";
-            document.getElementById("my-status").style.color = "#aaa";
-            document.getElementById("opp-status").innerText = "Waiting...";
-            document.getElementById("opp-status").style.color = "#aaa";
-            
-            for(let k = 1; k <= 101; k++){
-                const targetBtn = document.getElementById("btn-item-" + k);
-                if(targetBtn) targetBtn.classList.remove("selected");
-            }
-            mySelectedChoice = null;
-        });
-
-        document.getElementById("btn-reset").onclick = () => {
-            socket.emit("request-rematch", activeRoomId);
-        };
-    </script>
-</body>
-</html>
