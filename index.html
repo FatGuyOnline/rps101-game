@@ -5485,7 +5485,10 @@ const RPS_101_MATRIX = RPS_MATRIX;
         // ============================================================================
         // 6. REAL-TIME RESOLUTION ENGINE
         // ============================================================================
-       socket.on("combat-resolved", (movesObj) => {
+       // ============================================================================
+        // 6. REAL-TIME RESOLUTION ENGINE
+        // ============================================================================
+        socket.on("combat-resolved", (movesObj) => {
             let myId = socket.id;
             let oppId = Object.keys(movesObj).find(id => id !== myId);
 
@@ -5503,7 +5506,7 @@ const RPS_101_MATRIX = RPS_MATRIX;
                 resultBanner.style.color = "#ffdf00";
                 flavorBanner.innerText = `${rps101Items[myMove]} clashes evenly with ${rps101Items[oppMove]}`;
             } else {
-                // Calculate cyclic index distance to determine the winner
+                // Calculate cyclic index distance to determine the winner purely mathematically
                 let distance = (oppMove - myMove + 101) % 101;
                 let iWon = (distance <= 50);
 
@@ -5511,8 +5514,8 @@ const RPS_101_MATRIX = RPS_MATRIX;
                     resultBanner.innerText = "YOU WIN THE ROUND!";
                     resultBanner.style.color = "#00f2fe";
                     
-                    // FIXED: Uses the relative layout distance index (1-50) to fetch the custom text
-                    let verbAction = RPS_MATRIX[myMove][distance];
+                    // FIXED: Query your array layout using your exact absolute Item IDs
+                    let verbAction = RPS_MATRIX[myMove][oppMove];
                     if (!verbAction || verbAction === "") verbAction = "defeats";
                     
                     flavorBanner.innerText = `${rps101Items[myMove]} ${verbAction} ${rps101Items[oppMove]}`;
@@ -5520,9 +5523,8 @@ const RPS_101_MATRIX = RPS_MATRIX;
                     resultBanner.innerText = "OPPONENT WINS THE ROUND!";
                     resultBanner.style.color = "#e94560";
                     
-                    // FIXED: Recalculates the opponent's relative offset distance for their text look-up
-                    let oppDistance = (myMove - oppMove + 101) % 101;
-                    let verbAction = RPS_MATRIX[oppMove][oppDistance];
+                    // FIXED: Query opponent's array layout using your exact absolute Item IDs
+                    let verbAction = RPS_MATRIX[oppMove][myMove];
                     if (!verbAction || verbAction === "") verbAction = "defeats";
                     
                     flavorBanner.innerText = `${rps101Items[oppMove]} ${verbAction} ${rps101Items[myMove]}`;
