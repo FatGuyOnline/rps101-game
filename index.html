@@ -97,33 +97,1242 @@
         let mySelectedChoice = null;
 
         // Custom verbs map mapped organically to the internal physics layout structure
+       // OFFICIAL RPS 101 LOGIC MATRIX - PART 1
         function getActionVerb(winnerIdx, loserIdx) {
             const winner = rps101Items[winnerIdx];
             const loser = rps101Items[loserIdx];
+
+            // 1. DYNAMITE
+            if (winner === "Dynamite") {
+                if (loser === "Tornado") return "is blown to pieces by";
+                if (loser === "Quicksand") return "blows up";
+                if (loser === "Pit") return "destroys";
+                if (loser === "Chain") return "snaps";
+                if (loser === "Gun") return "explodes";
+                if (loser === "Law") return "defies";
+                if (loser === "Whip") return "shreds";
+                if (loser === "Sword") return "shatters";
+                if (loser === "Rock") return "obliterates";
+                if (loser === "Death") return "causes";
+                if (loser === "Wall") return "blasts through";
+                if (loser === "Sun") return "ignites";
+                if (loser === "Camera") return "ruins";
+                if (loser === "Fire") return "triggers";
+                if (loser === "Chainsaw") return "blows up";
+                // Global fallback for Dynamite's remaining 35 wins
+                return "blasts";
+            }
+
+            // 2. TORNADO
+            if (winner === "Tornado") {
+                if (loser === "Quicksand") return "scatters";
+                if (loser === "Pit") return "vacuums up";
+                if (loser === "Chain") return "breaks";
+                if (loser === "Gun") return "blows away";
+                if (loser === "Law") return "ignores";
+                if (loser === "Whip") return "entangles and breaks";
+                if (loser === "Sword") return "disarms";
+                if (loser === "Rock") return "moves";
+                if (loser === "Death") return "outruns";
+                if (loser === "Wall") return "topples";
+                if (loser === "Sun") return "blocks";
+                if (loser === "Camera") return "smashes";
+                if (loser === "Fire") return "extinguishes";
+                if (loser === "Chainsaw") return "jams";
+                if (loser === "School") return "destroys";
+                return "sweeps away";
+            }
+
+            // 3. QUICKSAND
+            if (winner === "Quicksand") {
+                if (loser === "Pit") return "fills";
+                if (loser === "Chain") return "sinks";
+                if (loser === "Gun") return "buries";
+                if (loser === "Law") return "swallows";
+                if (loser === "Whip") return "pulls down";
+                if (loser === "Sword") return "rusts";
+                if (loser === "Rock") return "covers";
+                if (loser === "Death") return "claims";
+                if (loser === "Wall") return "underwhelms";
+                if (loser === "Sun") return "dries out";
+                if (loser === "Camera") return "swallows";
+                if (loser === "Fire") return "smothers";
+                if (loser === "Chainsaw") return "clogs";
+                if (loser === "School") return "engulfs";
+                if (loser === "Scissors") return "traps";
+                return "swallows";
+            }
+
+            // 4. PIT
+            if (winner === "Pit") {
+                if (loser === "Chain") return "traps";
+                if (loser === "Gun") return "swallows";
+                if (loser === "Law") return "hides";
+                if (loser === "Whip") return "catches";
+                if (loser === "Sword") return "holds";
+                if (loser === "Rock") return "contains";
+                if (loser === "Death") return "awaits";
+                if (loser === "Wall") return "undermines";
+                if (loser === "Sun") return "is shaded from";
+                if (loser === "Camera") return "conceals";
+                if (loser === "Fire") return "confines";
+                if (loser === "Chainsaw") return "catches";
+                if (loser === "School") return "swallows";
+                if (loser === "Scissors") return "collects";
+                if (loser === "Poison") return "holds";
+                return "traps";
+            }
+
+            // 5. CHAIN
+            if (winner === "Chain") {
+                if (loser === "Gun") return "binds";
+                if (loser === "Law") return "restrains";
+                if (loser === "Whip") return "ties up";
+                if (loser === "Sword") return "disarms";
+                if (loser === "Rock") return "binds";
+                if (loser === "Death") return "shackles";
+                if (loser === "Wall") return "wraps";
+                if (loser === "Sun") return "absorbs heat from";
+                if (loser === "Camera") return "breaks";
+                if (loser === "Fire") return "withstands";
+                if (loser === "Chainsaw") return "tangles";
+                if (loser === "School") return "locks up";
+                if (loser === "Scissors") return "dulls";
+                if (loser === "Poison") return "binds";
+                if (loser === "Cage") return "locks";
+                return "binds and restrains";
+            }
+
+            // 6. GUN
+            if (winner === "Gun") {
+                if (loser === "Law") return "outshoots";
+                if (loser === "Whip") return "out-ranges";
+                if (loser === "Sword") return "beats";
+                if (loser === "Rock") return "shoots";
+                if (loser === "Death") return "causes";
+                if (loser === "Wall") return "breaches";
+                if (loser === "Sun") return "shoots at";
+                if (loser === "Camera") return "shatters";
+                if (loser === "Fire") return "triggers";
+                if (loser === "Chainsaw") return "outshoots";
+                if (loser === "School") return "threatens";
+                if (loser === "Scissors") return "destroys";
+                if (loser === "Poison") return "out-speeds";
+                if (loser === "Cage") return "shoots open";
+                if (loser === "Axe") return "out-ranges";
+                return "shoots";
+            }
+
+            // 7. LAW
+            if (winner === "Law") {
+                if (loser === "Whip") return "bans";
+                if (loser === "Sword") return "disarms";
+                if (loser === "Rock") return "restricts";
+                if (loser === "Death") return "prosecutes";
+                if (loser === "Wall") return "condemns";
+                if (loser === "Sun") return "regulates";
+                if (loser === "Camera") return "confiscates";
+                if (loser === "Fire") return "outlaws";
+                if (loser === "Chainsaw") return "bans";
+                if (loser === "School") return "governs";
+                if (loser === "Scissors") return "regulates";
+                if (loser === "Poison") return "prohibits";
+                if (loser === "Cage") return "enforces";
+                if (loser === "Axe") return "confiscates";
+                if (loser === "Peace") return "enforces";
+                return "prohibits";
+            }
+
+            // 8. WHIP
+            if (winner === "Whip") {
+                if (loser === "Sword") return "disarms";
+                if (loser === "Rock") return "strikes";
+                if (loser === "Death") return "staves off";
+                if (loser === "Wall") return "lashes";
+                if (loser === "Sun") return "cracks at";
+                if (loser === "Camera") return "smashes";
+                if (loser === "Fire") return "snaps through";
+                if (loser === "Chainsaw") return "tangles";
+                if (loser === "School") return "disciplines";
+                if (loser === "Scissors") return "snaps";
+                if (loser === "Poison") return "slaps away";
+                if (loser === "Cage") return "strikes through";
+                if (loser === "Axe") return "disarms";
+                if (loser === "Peace") return "disrupts";
+                if (loser === "Computer") return "smashes";
+                return "lashes";
+            }
+
+            // 9. SWORD
+            if (winner === "Sword") {
+                if (loser === "Rock") return "pries";
+                if (loser === "Death") return "slays";
+                if (loser === "Wall") return "carves";
+                if (loser === "Sun") return "reflects";
+                if (loser === "Camera") return "slices";
+                if (loser === "Fire") return "slices through";
+                if (loser === "Chainsaw") return "parries";
+                if (loser === "School") return "cuts funding to";
+                if (loser === "Scissors") return "snaps";
+                if (loser === "Poison") return "cuts down";
+                if (loser === "Cage") return "slashes open";
+                if (loser === "Axe") return "parries";
+                if (loser === "Peace") return "shatters";
+                if (loser === "Computer") return "slices";
+                if (loser === "Castle") return "breaches";
+                return "cuts through";
+            }
+
+            // 10. ROCK
+            if (winner === "Rock") {
+                if (loser === "Death") return "crushes";
+                if (loser === "Wall") return "breaks";
+                if (loser === "Sun") return "withstands";
+                if (loser === "Camera") return "smashes";
+                if (loser === "Fire") return "smothers";
+                if (loser === "Chainsaw") return "breaks";
+                if (loser === "School") return "smashes";
+                if (loser === "Scissors") return "crushes";
+                if (loser === "Poison") return "withstands";
+                if (loser === "Cage") return "breaks";
+                if (loser === "Axe") return "dulls";
+                if (loser === "Peace") return "shatters";
+                if (loser === "Computer") return "smashes";
+                if (loser === "Castle") return "battered down";
+                if (loser === "Snake") return "crushes";
+                return "crushes";
+            }
+
+            // 11. DEATH
+            if (winner === "Death") {
+                if (loser === "Wall") return "passes through";
+                if (loser === "Sun") return "outlasts";
+                if (loser === "Camera") return "cannot be captured by";
+                if (loser === "Fire") return "extinguishes";
+                if (loser === "Chainsaw") return "claims";
+                if (loser === "School") return "closes";
+                if (loser === "Scissors") return "breaks";
+                if (loser === "Poison") return "immune to";
+                if (loser === "Cage") return "escapes";
+                if (loser === "Axe") return "claims";
+                if (loser === "Peace") return "ends";
+                if (loser === "Computer") return "corrupts";
+                if (loser === "Castle") return "haunts";
+                if (loser === "Snake") return "kills";
+                if (loser === "Blood") return "stops";
+                return "claims the life of";
+            }
+
+            // 12. WALL
+            if (winner === "Wall") {
+                if (loser === "Sun") return "blocks";
+                if (loser === "Camera") return "obstructs";
+                if (loser === "Fire") return "contains";
+                if (loser === "Chainsaw") return "stops";
+                if (loser === "School") return "encloses";
+                if (loser === "Scissors") return "breaks";
+                if (loser === "Poison") return "blocks";
+                if (loser === "Cage") return "surrounds";
+                if (loser === "Axe") return "stops";
+                if (loser === "Peace") return "divides";
+                if (loser === "Computer") return "blocks signals to";
+                if (loser === "Castle") return "fortifies";
+                if (loser === "Snake") return "crushes";
+                if (loser === "Blood") return "contains";
+                if (loser === "Porcupine") return "stops";
+                return "completely blocks";
+            }
+
+            // 13. SUN
+            if (winner === "Sun") {
+                if (loser === "Camera") return "overexposes";
+                if (loser === "Fire") return "outshines";
+                if (loser === "Chainsaw") return "melts";
+                if (loser === "School") return "creates summer vacation for";
+                if (loser === "Scissors") return "melts";
+                if (loser === "Poison") return "evaporates";
+                if (loser === "Cage") return "heats up";
+                if (loser === "Axe") return "melts";
+                if (loser === "Peace") return "warms";
+                if (loser === "Computer") return "overheats";
+                if (loser === "Castle") return "illuminates";
+                if (loser === "Snake") return "overheats";
+                if (loser === "Blood") return "dries up";
+                if (loser === "Porcupine") return "overheats";
+                if (loser === "Vulture") return "blinds";
+                return "outshines and melts";
+            }
+
+            // 14. CAMERA
+            if (winner === "Camera") {
+                if (loser === "Fire") return "documents";
+                if (loser === "Chainsaw") return "records";
+                if (loser === "School") return "exposes";
+                if (loser === "Scissors") return "photographs";
+                if (loser === "Poison") return "captures";
+                if (loser === "Cage") return "looks inside";
+                if (loser === "Axe") return "documents";
+                if (loser === "Peace") return "captures";
+                if (loser === "Computer") return "inputs into";
+                if (loser === "Castle") return "takes picture of";
+                if (loser === "Snake") return "flashes";
+                if (loser === "Blood") return "analyzes";
+                if (loser === "Porcupine") return "photographs";
+                if (loser === "Vulture") return "captures";
+                if (loser === "Monkey") return "snaps";
+                return "captures and documents";
+            }
+
+            // 15. FIRE
+            if (winner === "Fire") {
+                if (loser === "Chainsaw") return "melts";
+                if (loser === "School") return "burns down";
+                if (loser === "Scissors") return "melts";
+                if (loser === "Poison") return "burns up";
+                if (loser === "Cage") return "melts";
+                if (loser === "Axe") return "melts";
+                if (loser === "Peace") return "destroys";
+                if (loser === "Computer") return "burns";
+                if (loser === "Castle") return "burns down";
+                if (loser === "Snake") return "cooks";
+                if (loser === "Blood") return "boils";
+                if (loser === "Porcupine") return "burns";
+                if (loser === "Vulture") return "cooks";
+                if (loser === "Monkey") return "scares";
+                if (loser === "King") return "overthrows";
+                return "melts and burns";
+            }
+
+            // ALGORITHMIC FALLBACK OVERRIDE FOR ITEMS 16 - 101
             const distance = (loserIdx - winnerIdx + 101) % 101;
+            if (distance <= 10) return "crushes";
+            if (distance <= 20) return "outclasses";
+            if (distance <= 30) return "neutralizes";
+            if (distance <= 40) return "overpowers";
+            return "defeats";
+        }
+        // 16. CHAINSAW
+            if (winner === "Chainsaw") {
+                if (loser === "School") return "cuts down";
+                if (loser === "Scissors") return "breaks";
+                if (loser === "Poison") return "slices through";
+                if (loser === "Cage") return "cuts open";
+                if (loser === "Axe") return "out-powers";
+                if (loser === "Peace") return "disrupts";
+                if (loser === "Computer") return "hacks apart";
+                if (loser === "Castle") return "breaches";
+                if (loser === "Snake") return "slices";
+                if (loser === "Blood") return "spatters";
+                if (loser === "Porcupine") return "shreds";
+                if (loser === "Vulture") return "chases off";
+                if (loser === "Monkey") return "scares";
+                if (loser === "King" || loser === "Queen") return "dethrones";
+                return "saws through";
+            }
 
-            // Tailored actions per weapon class/distance
-            if (winner === "Dynamite") return "explodes";
-            if (winner === "Tornado") return "sweeps away";
-            if (winner === "Pit" || winner === "Quicksand") return "swallows";
-            if (winner === "Chain") return "binds and restrains";
-            if (winner === "Gun" || winner === "Laser" || winner === "Nuke") return "blasts";
-            if (winner === "Sword" || winner === "Axe") return "slices and cuts through";
-            if (winner === "Rock") return "smashes and crushes";
-            if (winner === "Death") return "claims the life of";
-            if (winner === "Wall") return "completely blocks";
-            if (winner === "Sun" || winner === "Fire") return "melts and burns";
-            if (winner === "Poison") return "toxifies and melts";
-            if (winner === "Cage") return "imprisons and traps";
-            if (winner === "School") return "out-educates and bans";
-            if (winner === "Scissors") return "shreds and snips";
-            if (winner === "Noise") return "deafens and disrupts";
-            if (winner === "Monkey") return "out-smarts and throws items at";
-            if (winner === "King" || winner === "Queen" || winner === "Prince" || winner === "Princess") return "rules over and commands";
-            if (winner === "Police") return "arrests and impounds";
-            if (winner === "Lightning" || winner === "Electricity") return "shocks and fries";
+            // 17. SCHOOL
+            if (winner === "School") {
+                if (loser === "Scissors") return "outlaws";
+                if (loser === "Poison") return "educates against";
+                if (loser === "Cage") return "replaces";
+                if (loser === "Axe") return "teaches safety over";
+                if (loser === "Peace") return "fosters";
+                if (loser === "Computer") return "utilizes";
+                if (loser === "Castle") return "out-lasts";
+                if (loser === "Snake") return "studies";
+                if (loser === "Blood") return "analyzes";
+                if (loser === "Porcupine") return "classes";
+                if (loser === "Vulture") return "educates";
+                if (loser === "Monkey") return "trains";
+                if (loser === "King" || loser === "Queen" || loser === "Prince") return "enlightens";
+                return "out-educates";
+            }
 
-            // Default algorithmic contextual tiers if no hard override is needed
+            // 18. SCISSORS
+            if (winner === "Scissors") {
+                if (loser === "Poison") return "cuts the vial of";
+                if (loser === "Cage") return "snips the ropes of";
+                if (loser === "Axe") return "parries";
+                if (loser === "Peace") return "shreds";
+                if (loser === "Computer") return "cuts wires of";
+                if (loser === "Castle") return "trims landscaping of";
+                if (loser === "Snake") return "cuts";
+                if (loser === "Blood") return "samples";
+                if (loser === "Porcupine") return "trims";
+                if (loser === "Vulture") return "clips wings of";
+                if (loser === "Monkey") return "snips at";
+                if (loser === "King" || loser === "Queen") return "tailors clothes for";
+                if (loser === "Prince" || loser === "Princess") return "grooms";
+                return "cuts and snips";
+            }
+
+            // 19. POISON
+            if (winner === "Poison") {
+                if (loser === "Cage") return "corrodes";
+                if (loser === "Axe") return "corrodes metal of";
+                if (loser === "Peace") return "taints";
+                if (loser === "Computer") return "ruins circuits of";
+                if (loser === "Castle") return "contaminates";
+                if (loser === "Snake") return "neutralizes";
+                if (loser === "Blood") return "taints";
+                if (loser === "Porcupine" || loser === "Vulture" || loser === "Monkey") return "sickens";
+                if (loser === "King" || loser === "Queen" || loser === "Prince" || loser === "Princess") return "compromises";
+                if (loser === "Police") return "incapacitates";
+                return "toxifies and melts";
+            }
+
+            // 20. CAGE
+            if (winner === "Cage") {
+                if (loser === "Axe") return "traps";
+                if (loser === "Peace") return "confines";
+                if (loser === "Computer") return "encloses";
+                if (loser === "Castle") return "fits inside";
+                if (loser === "Snake" || loser === "Porcupine" || loser === "Vulture" || loser === "Monkey") return "captures";
+                if (loser === "King" || loser === "Queen" || loser === "Prince" || loser === "Princess") return "imprisons";
+                if (loser === "Police") return "detains";
+                if (loser === "Woman" || loser === "Baby" || loser === "Man") return "traps";
+                return "imprisons and traps";
+            }
+
+            // 21. AXE
+            if (winner === "Axe") {
+                if (loser === "Peace") return "shatters";
+                if (loser === "Computer") return "smashes";
+                if (loser === "Castle") return "chops down doors of";
+                if (loser === "Snake") return "cuts";
+                if (loser === "Blood") return "splits";
+                if (loser === "Porcupine") return "cleaves";
+                if (loser === "Vulture" || loser === "Monkey") return "chases off";
+                if (loser === "King" || loser === "Queen" || loser === "Prince" || loser === "Princess") return "dethrones";
+                if (loser === "Police") return "resists";
+                if (loser === "Woman" || loser === "Man") return "out-matches";
+                if (loser === "Home") return "chops down";
+                return "chops and cleaves";
+            }
+
+            // 22. PEACE
+            if (winner === "Peace") {
+                if (loser === "Computer") return "calms";
+                if (loser === "Castle") return "settles";
+                if (loser === "Snake" || loser === "Porcupine" || loser === "Vulture" || loser === "Monkey") return "tames";
+                if (loser === "King" || loser === "Queen" || loser === "Prince" || loser === "Princess" || loser === "Police") return "pacifies";
+                if (loser === "Woman" || loser === "Baby" || loser === "Man") return "harmonizes";
+                if (loser === "Home") return "blesses";
+                if (loser === "Train" || loser === "Car") return "halts conflict near";
+                return "pacifies and settles";
+            }
+
+            // 23. COMPUTER
+            if (winner === "Computer") {
+                if (loser === "Castle") return "automates";
+                if (loser === "Snake" || loser === "Porcupine" || loser === "Vulture" || loser === "Monkey") return "logs data on";
+                if (loser === "King" || loser === "Queen" || loser === "Prince" || loser === "Princess") return "out-calculates";
+                if (loser === "Police") return "tracks";
+                if (loser === "Woman" || loser === "Baby" || loser === "Man") return "entertains";
+                if (loser === "Home") return "networks";
+                if (loser === "Train" || loser === "Car") return "controls";
+                if (loser === "Noise") return "filters";
+                return "out-calculates and controls";
+            }
+
+            // 24. CASTLE
+            if (winner === "Castle") {
+                if (loser === "Snake" || loser === "Porcupine") return "keeps out";
+                if (loser === "Vulture") return "shelters from";
+                if (loser === "Monkey") return "cages";
+                if (loser === "King" || loser === "Queen" || loser === "Prince" || loser === "Princess") return "houses";
+                if (loser === "Police") return "out-fortifies";
+                if (loser === "Woman" || loser === "Baby" || loser === "Man") return "protects";
+                if (loser === "Home") return "outclasses";
+                if (loser === "Train" || loser === "Car") return "blocks path of";
+                if (loser === "Noise") return "echoes";
+                if (loser === "Bicycle") return "withstands";
+                return "out-fortifies and shelters";
+            }
+
+            // 25. SNAKE
+            if (winner === "Snake") {
+                if (loser === "Blood") return "drinks";
+                if (loser === "Porcupine") return "out-maneuvers";
+                if (loser === "Vulture") return "strikes at";
+                if (loser === "Monkey") return "scares";
+                if (loser === "King" || loser === "Queen" || loser === "Prince" || loser === "Princess") return "startles";
+                if (loser === "Police" || loser === "Woman" || loser === "Baby" || loser === "Man") return "bites";
+                if (loser === "Home") return "infests";
+                if (loser === "Train" || loser === "Car") return "frightens passengers of";
+                if (loser === "Noise") return "ignores";
+                if (loser === "Bicycle") return "punctures tires of";
+                if (loser === "Tree") return "climbs";
+                return "bites and out-maneuvers";
+            }
+
+            // 26. BLOOD
+            if (winner === "Blood") {
+                if (loser === "Porcupine" || loser === "Vulture" || loser === "Monkey") return "sustains";
+                if (loser === "King" || loser === "Queen" || loser === "Prince" || loser === "Princess") return "defines lineage of";
+                if (loser === "Police" || loser === "Woman" || loser === "Baby" || loser === "Man") return "vitalizes";
+                if (loser === "Home") return "stains";
+                if (loser === "Train" || loser === "Car" || loser === "Bicycle") return "soils";
+                if (loser === "Noise") return "pulses through";
+                if (loser === "Tree") return "nourishes roots of";
+                if (loser === "Turnip") return "stains";
+                return "vitalizes and stains";
+            }
+
+            // 27. PORCUPINE
+            if (winner === "Porcupine") {
+                if (loser === "Vulture") return "pokes";
+                if (loser === "Monkey") return "quills";
+                if (loser === "King" || loser === "Queen" || loser === "Prince" || loser === "Princess" || loser === "Police") return "pricks";
+                if (loser === "Woman" || loser === "Baby" || loser === "Man") return "scratches";
+                if (loser === "Home") return "invades";
+                if (loser === "Train" || loser === "Car" || loser === "Bicycle") return "pops tires of";
+                if (loser === "Noise") return "bristles at";
+                if (loser === "Tree") return "climbs";
+                if (loser === "Turnip") return "digs up";
+                if (loser === "Duck") return "scares";
+                return "pricks with quills";
+            }
+
+            // 28. VULTURE
+            if (winner === "Vulture") {
+                if (loser === "Monkey") return "swoops on";
+                if (loser === "King" || loser === "Queen" || loser === "Prince" || loser === "Princess") return "circles";
+                if (loser === "Police" || loser === "Woman" || loser === "Baby" || loser === "Man") return "harasses";
+                if (loser === "Home") return "roosts on";
+                if (loser === "Train" || loser === "Car" || loser === "Bicycle") return "outflies";
+                if (loser === "Noise") return "shrieks over";
+                if (loser === "Tree") return "nests in";
+                if (loser === "Turnip") return "pecks";
+                if (loser === "Duck") return "outflies";
+                if (loser === "Wolf") return "evades";
+                return "swoops down on";
+            }
+
+            // 29. MONKEY
+            if (winner === "Monkey") {
+                if (loser === "King" || loser === "Queen" || loser === "Prince" || loser === "Princess") return "mocks";
+                if (loser === "Police") return "evades";
+                if (loser === "Woman" || loser === "Baby" || loser === "Man") return "amuses";
+                if (loser === "Home") return "breaks into";
+                if (loser === "Train" || loser === "Car" || loser === "Bicycle") return "rides";
+                if (loser === "Noise") return "chatters louder than";
+                if (loser === "Tree") return "swings from";
+                if (loser === "Turnip") return "steals";
+                if (loser === "Duck") return "catches";
+                if (loser === "Wolf") return "outsmarts";
+                if (loser === "Cat") return "teases";
+                return "outsmarts and swings from";
+            }
+
+            // 30. KING
+            if (winner === "King") {
+                if (loser === "Queen" || loser === "Prince" || loser === "Princess") return "rules over";
+                if (loser === "Police") return "commands";
+                if (loser === "Woman" || loser === "Baby" || loser === "Man") return "governs";
+                if (loser === "Home") return "taxes";
+                if (loser === "Train" || loser === "Car") return "requisitions";
+                if (loser === "Noise") return "silences";
+                if (loser === "Bicycle") return "confiscates";
+                if (loser === "Tree") return "owns";
+                if (loser === "Turnip") return "eats";
+                if (loser === "Duck" || loser === "Wolf" || loser === "Cat" || loser === "Bird") return "hunts";
+                return "rules over and commands";
+            }
+
+            // 31. QUEEN
+            if (winner === "Queen") {
+                if (loser === "Prince" || loser === "Princess") return "guides";
+                if (loser === "Police") return "commands";
+                if (loser === "Woman" || loser === "Baby" || loser === "Man") return "reigns over";
+                if (loser === "Home") return "visits";
+                if (loser === "Train" || loser === "Car") return "rides in style on";
+                if (loser === "Noise") return "quells";
+                if (loser === "Bicycle") return "bypasses";
+                if (loser === "Tree") return "claims";
+                if (loser === "Turnip") return "serves";
+                if (loser === "Duck" || loser === "Wolf" || loser === "Cat" || loser === "Bird" || loser === "Fish") return "commands protection from";
+                return "rules over and reigns";
+            }
+
+            // 32. PRINCE
+            if (winner === "Prince") {
+                if (loser === "Princess") return "escorts";
+                if (loser === "Police") return "out-ranks";
+                if (loser === "Woman" || loser === "Baby" || loser === "Man") return "charms";
+                if (loser === "Home") return "inherits";
+                if (loser === "Train" || loser === "Car" || loser === "Bicycle") return "commands";
+                if (loser === "Noise") return "ignores";
+                if (loser === "Tree") return "climbs";
+                if (loser === "Turnip") return "harvests";
+                if (loser === "Duck" || loser === "Wolf" || loser === "Cat" || loser === "Bird" || loser === "Fish" || loser === "Spider") return "hunts";
+                return "out-ranks and charms";
+            }
+
+            // 33. PRINCESS
+            if (winner === "Princess") {
+                if (loser === "Police") return "out-ranks";
+                if (loser === "Woman" || loser === "Baby" || loser === "Man") return "charms";
+                if (loser === "Home") return "adorns";
+                if (loser === "Train" || loser === "Car" || loser === "Bicycle") return "rides";
+                if (loser === "Noise") return "out-sings";
+                if (loser === "Tree") return "rests under";
+                if (loser === "Turnip") return "picks";
+                if (loser === "Duck" || loser === "Wolf" || loser === "Cat" || loser === "Bird" || loser === "Fish" || loser === "Spider" || loser === "Cockroach") return "befriends";
+                return "out-ranks and charms";
+            }
+
+            // 34. POLICE
+            if (winner === "Police") {
+                if (loser === "Woman" || loser === "Baby" || loser === "Man") return "protects";
+                if (loser === "Home") return "safeguards";
+                if (loser === "Train" || loser === "Car") return "recovers";
+                if (loser === "Noise") return "stops";
+                if (loser === "Bicycle") return "registers";
+                if (loser === "Tree") return "patrols around";
+                if (loser === "Turnip") return "inspects";
+                if (loser === "Duck" || loser === "Wolf" || loser === "Cat" || loser === "Bird" || loser === "Fish" || loser === "Spider" || loser === "Cockroach" || loser === "Brain") return "investigates";
+                return "detains and registers";
+            }
+
+            // 35. WOMAN
+            if (winner === "Woman") {
+                if (loser === "Baby") return "nurtures";
+                if (loser === "Man") return "out-smarts";
+                if (loser === "Home") return "manages";
+                if (loser === "Train" || loser === "Car" || loser === "Bicycle") return "drives";
+                if (loser === "Noise") return "tolerates";
+                if (loser === "Tree") return "plants";
+                if (loser === "Turnip") return "cooks";
+                if (loser === "Duck" || loser === "Wolf" || loser === "Cat" || loser === "Bird" || loser === "Fish" || loser === "Spider" || loser === "Cockroach" || loser === "Brain" || loser === "Community") return "organizes";
+                return "out-smarts and manages";
+            }
+        // 36. BABY
+            if (winner === "Baby") {
+                if (loser === "Man") return "charms";
+                if (loser === "Home") return "fills with joy";
+                if (loser === "Train" || loser === "Car") return "rides in";
+                if (loser === "Noise") return "makes louder";
+                if (loser === "Bicycle") return "rides in trailer of";
+                if (loser === "Tree") return "plays under";
+                if (loser === "Turnip") return "mashes";
+                if (loser === "Duck" || loser === "Cat" || loser === "Bird") return "giggles at";
+                if (loser === "Wolf" || loser === "Spider" || loser === "Cockroach" || loser === "Brain" || loser === "Community" || loser === "Cross") return "out-innocents";
+                return "charms";
+            }
+
+            // 37. MAN
+            if (winner === "Man") {
+                if (loser === "Home") return "builds";
+                if (loser === "Train" || loser === "Car" || loser === "Bicycle") return "operates";
+                if (loser === "Noise") return "shouts over";
+                if (loser === "Tree") return "chops down";
+                if (loser === "Turnip") return "eats";
+                if (loser === "Duck" || loser === "Wolf" || loser === "Cat" || loser === "Bird" || loser === "Fish" || loser === "Spider" || loser === "Cockroach" || loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money") return "utilizes";
+                return "manages";
+            }
+
+            // 38. HOME
+            if (winner === "Home") {
+                if (loser === "Train" || loser === "Car") return "outclasses";
+                if (loser === "Noise") return "insulates against";
+                if (loser === "Bicycle") return "stores";
+                if (loser === "Tree") return "is built from";
+                if (loser === "Turnip") return "houses";
+                if (loser === "Duck" || loser === "Cat" || loser === "Bird" || loser === "Spider" || loser === "Cockroach") return "shelters";
+                if (loser === "Wolf") return "keeps out";
+                if (loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money" || loser === "Vampire") return "contains";
+                return "shelters and contains";
+            }
+
+            // 39. TRAIN
+            if (winner === "Train") {
+                if (loser === "Car") return "derails";
+                if (loser === "Noise") return "out-rumbles";
+                if (loser === "Bicycle") return "runs over";
+                if (loser === "Tree") return "splinters";
+                if (loser === "Turnip") return "crushes";
+                if (loser === "Duck" || loser === "Wolf" || loser === "Cat" || loser === "Bird" || loser === "Fish" || loser === "Spider" || loser === "Cockroach") return "runs over";
+                if (loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money" || loser === "Vampire" || loser === "Sponge") return "overpowers";
+                return "overpowers and runs over";
+            }
+
+            // 40. CAR
+            if (winner === "Car") {
+                if (loser === "Noise") return "out-honks";
+                if (loser === "Bicycle") return "overtakes";
+                if (loser === "Tree") return "crashes through";
+                if (loser === "Turnip") return "flattens";
+                if (loser === "Duck" || loser === "Wolf" || loser === "Cat" || loser === "Bird" || loser === "Fish" || loser === "Spider" || loser === "Cockroach") return "strikes";
+                if (loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money" || loser === "Vampire" || loser === "Sponge" || loser === "Church") return "transports";
+                return "overtakes and flattens";
+            }
+
+            // 41. NOISE
+            if (winner === "Noise") {
+                if (loser === "Bicycle") return "startles rider of";
+                if (loser === "Tree") return "vibrates";
+                if (loser === "Turnip") return "shakes";
+                if (loser === "Duck" || loser === "Wolf" || loser === "Cat" || loser === "Bird" || loser === "Fish" || loser === "Spider" || loser === "Cockroach") return "scares";
+                if (loser === "Brain") return "distracts";
+                if (loser === "Community") return "disrupts";
+                if (loser === "Cross" || loser === "Money" || loser === "Vampire" || loser === "Sponge" || loser === "Church" || loser === "Butter") return "disturbs";
+                return "disrupts and deafens";
+            }
+
+            // 42. BICYCLE
+            if (winner === "Bicycle") {
+                if (loser === "Tree") return "navigates around";
+                if (loser === "Turnip") return "rolls over";
+                if (loser === "Duck" || loser === "Cat" || loser === "Bird" || loser === "Spider" || loser === "Cockroach") return "runs over";
+                if (loser === "Wolf") return "outruns";
+                if (loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money" || loser === "Vampire" || loser === "Sponge" || loser === "Church" || loser === "Butter" || loser === "Book") return "out-paces";
+                return "rolls over";
+            }
+
+            // 43. TREE
+            if (winner === "Tree") {
+                if (loser === "Turnip") return "outgrows";
+                if (loser === "Duck" || loser === "Cat" || loser === "Bird" || loser === "Spider" || loser === "Cockroach") return "houses";
+                if (loser === "Wolf") return "evades";
+                if (loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money" || loser === "Vampire" || loser === "Sponge" || loser === "Church" || loser === "Butter" || loser === "Book" || loser === "Paper") return "outlasts";
+                return "outgrows and shades";
+            }
+
+            // 44. TURNIP
+            if (winner === "Turnip") {
+                if (loser === "Duck" || loser === "Cat" || loser === "Bird" || loser === "Fish" || loser === "Spider" || loser === "Cockroach") return "feeds";
+                if (loser === "Wolf") return "trips";
+                if (loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money" || loser === "Vampire" || loser === "Sponge" || loser === "Church" || loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud") return "outlasts";
+                return "outlasts";
+            }
+
+            // 45. DUCK
+            if (winner === "Duck") {
+                if (loser === "Wolf") return "flies away from";
+                if (loser === "Cat") return "pecks";
+                if (loser === "Bird") return "out-swims";
+                if (loser === "Fish") return "eats";
+                if (loser === "Spider" || loser === "Cockroach") return "snaps up";
+                if (loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money" || loser === "Vampire" || loser === "Sponge" || loser === "Church" ||
+                    loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud" || loser === "Airplane") return "bypasses";
+                return "flies away from";
+            }
+
+            // 46. WOLF
+            if (winner === "Wolf") {
+                if (loser === "Cat" || loser === "Bird" || loser === "Fish") return "catches";
+                if (loser === "Spider" || loser === "Cockroach") return "steps on";
+                if (loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money" || loser === "Vampire" || loser === "Sponge" || loser === "Church" ||
+                    loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud" || loser === "Airplane" || loser === "Moon") return "out-savages";
+                return "overpowers";
+            }
+
+            // 47. CAT
+            if (winner === "Cat") {
+                if (loser === "Bird" || loser === "Fish" || loser === "Spider" || loser === "Cockroach") return "catches";
+                if (loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money" || loser === "Vampire" || loser === "Sponge" || loser === "Church" ||
+                    loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud" || loser === "Airplane" || loser === "Moon" || loser === "Grass") return "ignores";
+                return "catches";
+            }
+
+            // 48. BIRD
+            if (winner === "Bird") {
+                if (loser === "Fish" || loser === "Spider" || loser === "Cockroach") return "eats";
+                if (loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money" || loser === "Vampire" || loser === "Sponge" || loser === "Church" ||
+                    loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud" || loser === "Airplane" || loser === "Moon" || loser === "Grass" || loser === "Film") return "outflies";
+                return "outflies";
+            }
+
+            // 49. FISH
+            if (winner === "Fish") {
+                if (loser === "Spider" || loser === "Cockroach") return "snaps up";
+                if (loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money" || loser === "Vampire" || loser === "Sponge" || loser === "Church" ||
+                    loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud" || loser === "Airplane" || loser === "Moon" || loser === "Grass" || loser === "Film" || loser === "Toilet") return "out-swims";
+                return "out-swims";
+            }
+
+            // 50. SPIDER
+            if (winner === "Spider") {
+                if (loser === "Cockroach") return "traps";
+                if (loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money" || loser === "Vampire" || loser === "Sponge" || loser === "Church" ||
+                    loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud" || loser === "Airplane" || loser === "Moon" || loser === "Grass" || loser === "Film" || loser === "Toilet" || loser === "Air") return "enmeshes";
+                return "bites and traps";
+            }
+
+            // 51. COCKROACH
+            if (winner === "Cockroach") {
+                if (loser === "Brain" || loser === "Community" || loser === "Cross" || loser === "Money" || loser === "Vampire" || loser === "Sponge" || loser === "Church" ||
+                    loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud" || loser === "Airplane" || loser === "Moon" || loser === "Grass" || loser === "Film" || loser === "Toilet" || loser === "Air" || loser === "Planet") return "outlasts";
+                return "outlasts";
+            }
+
+            // 52. BRAIN
+            if (winner === "Brain") {
+                if (loser === "Community") return "guides";
+                if (loser === "Cross") return "analyzes";
+                if (loser === "Money") return "out-values";
+                if (loser === "Vampire") return "outsmarts";
+                if (loser === "Sponge") return "out-thinks";
+                if (loser === "Church") return "conceptualizes";
+                if (loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud" || loser === "Airplane" || loser === "Moon" || loser === "Grass" || loser === "Film" || loser === "Toilet" || loser === "Air" || loser === "Planet" || loser === "Guitar") return "out-thinks";
+                return "out-thinks";
+            }
+
+            // 53. COMMUNITY
+            if (winner === "Community") {
+                if (loser === "Cross") return "supports";
+                if (loser === "Money") return "pools";
+                if (loser === "Vampire") return "banishes";
+                if (loser === "Sponge") return "absorbs";
+                if (loser === "Church") return "forms";
+                if (loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud" || loser === "Airplane" || loser === "Moon" || loser === "Grass" || loser === "Film" || loser === "Toilet" || loser === "Air" || loser === "Planet" || loser === "Guitar" || loser === "Bowl") return "outnumbers";
+                return "outnumbers";
+            }
+
+            // 54. CROSS
+            if (winner === "Cross") {
+                if (loser === "Money") return "out-values";
+                if (loser === "Vampire") return "repels";
+                if (loser === "Sponge") return "blesses";
+                if (loser === "Church") return "adorns";
+                if (loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud" || loser === "Airplane" || loser === "Moon" || loser === "Grass" || loser === "Film" || loser === "Toilet" || loser === "Air" || loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup") return "blesses";
+                return "blesses";
+            }
+
+            // 55. MONEY
+            if (winner === "Money") {
+                if (loser === "Vampire") return "bribes";
+                if (loser === "Sponge") return "buys";
+                if (loser === "Church") return "funds";
+                if (loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud" || loser === "Airplane" || loser === "Moon" ||
+                    loser === "Grass" || loser === "Film" || loser === "Toilet" || loser === "Air" || loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup" || loser === "Beer") return "buys";
+                return "buys";
+            }
+        // 56. VAMPIRE
+            if (winner === "Vampire") {
+                if (loser === "Sponge") return "bites";
+                if (loser === "Church") return "desecrates";
+                if (loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud" || loser === "Airplane" || loser === "Moon" ||
+                    loser === "Grass" || loser === "Film" || loser === "Toilet" || loser === "Air" || loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup" || loser === "Beer" || loser === "Rain") return "out-savages";
+                return "overpowers";
+            }
+
+            // 57. SPONGE
+            if (winner === "Sponge") {
+                if (loser === "Church") return "cleans";
+                if (loser === "Butter") return "wipes up";
+                if (loser === "Book" || loser === "Paper") return "wipes";
+                if (loser === "Cloud" || loser === "Airplane" || loser === "Moon" || loser === "Grass" || loser === "Film") return "outlasts";
+                if (loser === "Toilet") return "cleans";
+                if (loser === "Air" || loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup") return "outlasts";
+                if (loser === "Beer" || loser === "Rain" || loser === "Water") return "absorbs";
+                return "absorbs";
+            }
+
+            // 58. CHURCH
+            if (winner === "Church") {
+                if (loser === "Butter" || loser === "Book" || loser === "Paper" || loser === "Cloud" || loser === "Airplane" || loser === "Moon" || loser === "Grass" || loser === "Film" || loser === "Toilet" || loser === "Air" || loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup" || loser === "Beer" || loser === "Rain" || loser === "Water" || loser === "TV") return "sanctifies";
+                return "sanctifies";
+            }
+
+            // 59. BUTTER
+            if (winner === "Butter") {
+                if (loser === "Book" || loser === "Paper") return "greases";
+                if (loser === "Cloud" || loser === "Airplane" || loser === "Moon" || loser === "Grass" || loser === "Film" || loser === "Toilet" || loser === "Air" || loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup" || loser === "Beer" || loser === "Rain" || loser === "Water" || loser === "TV" || loser === "Rainbow") return "outlasts";
+                return "outlasts";
+            }
+
+            // 60. BOOK
+            if (winner === "Book") {
+                if (loser === "Paper") return "outclasses";
+                if (loser === "Cloud" || loser === "Airplane" || loser === "Moon" || loser === "Grass" || loser === "Film" || loser === "Toilet" || loser === "Air" || loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup" || loser === "Beer" || loser === "Rain" || loser === "Water" || loser === "TV" || loser === "Rainbow" || loser === "UFO") return "out-educates";
+                return "out-educates";
+            }
+
+            // 61. PAPER
+            if (winner === "Paper") {
+                if (loser === "Cloud" || loser === "Airplane" || loser === "Moon" || loser === "Grass" || loser === "Film" || loser === "Toilet" || loser === "Air" || loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup" || loser === "Beer" || loser === "Rain" || loser === "Water" || loser === "TV" || loser === "Rainbow" || loser === "UFO" || loser === "Alien") return "covers";
+                return "covers";
+            }
+
+            // 62. CLOUD
+            if (winner === "Cloud") {
+                if (loser === "Airplane") return "shrouds";
+                if (loser === "Moon") return "blocks";
+                if (loser === "Grass" || loser === "Film" || loser === "Toilet") return "outlasts";
+                if (loser === "Air") return "condenses in";
+                if (loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup") return "outlasts";
+                if (loser === "Beer" || loser === "Rain" || loser === "Water") return "produces";
+                if (loser === "TV" || loser === "Rainbow" || loser === "UFO" || loser === "Alien" || loser === "Prayer") return "bypasses";
+                return "blocks and outlasts";
+            }
+
+            // 63. AIRPLANE
+            if (winner === "Airplane") {
+                if (loser === "Moon") return "flies toward";
+                if (loser === "Grass" || loser === "Film" || loser === "Toilet" || loser === "Air" || loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup" || loser === "Beer" || loser === "Rain" || loser === "Water" ||
+                    loser === "TV" || loser === "Rainbow" || loser === "UFO" || loser === "Alien" || loser === "Prayer" || loser === "Mountain") return "outflies";
+                return "outflies";
+            }
+
+            // 64. MOON
+            if (winner === "Moon") {
+                if (loser === "Grass") return "shines on";
+                if (loser === "Film") return "exposes";
+                if (loser === "Toilet" || loser === "Air" || loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup" || loser === "Beer") return "outlasts";
+                if (loser === "Rain" || loser === "Water") return "pulls tides of";
+                if (loser === "TV" || loser === "Rainbow" || loser === "UFO" || loser === "Alien" || loser === "Prayer" || loser === "Mountain" || loser === "Satan") return "outlasts";
+                return "outlasts";
+            }
+
+            // 65. GRASS
+            if (winner === "Grass") {
+                if (loser === "Film") return "covers";
+                if (loser === "Toilet") return "clogs";
+                if (loser === "Air") return "purifies";
+                if (loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup" || loser === "Beer" || loser === "Rain" || loser === "Water" ||
+                    loser === "TV" || loser === "Rainbow" || loser === "UFO" || loser === "Alien" || loser === "Prayer" || loser === "Mountain" || loser === "Satan" ||
+                    loser === "Dragon") return "outgrows";
+                return "outgrows";
+            }
+
+            // 66. FILM
+            if (winner === "Film") {
+                if (loser === "Toilet" || loser === "Air" || loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup" || loser === "Beer" || loser === "Rain" || loser === "Water" ||
+                    loser === "TV" || loser === "Rainbow" || loser === "UFO" || loser === "Alien" || loser === "Prayer" ||
+                    loser === "Mountain" || loser === "Satan" || loser === "Dragon" || loser === "Diamond") return "records";
+                return "records";
+            }
+
+            // 67. TOILET
+            if (winner === "Toilet") {
+                if (loser === "Air") return "freshens";
+                if (loser === "Planet" || loser === "Guitar" || loser === "Bowl" || loser === "Cup") return "outlasts";
+                if (loser === "Beer" || loser === "Rain" || loser === "Water") return "flushes";
+                if (loser === "TV" || loser === "Rainbow" || loser === "UFO" || loser === "Alien" || loser === "Prayer" ||
+                    loser === "Mountain" || loser === "Satan" || loser === "Dragon" || loser === "Diamond" || loser === "Platinum") return "flushes down";
+                return "flushes";
+            }
+
+            // 68. AIR
+            if (winner === "Air") {
+                if (loser === "Planet") return "surrounds";
+                if (loser === "Guitar") return "carries sound of";
+                if (loser === "Bowl" || loser === "Cup") return "fills";
+                if (loser === "Beer" || loser === "Rain" || loser === "Water" || loser === "TV" || loser === "Rainbow" || loser === "UFO" || loser === "Alien" || loser === "Prayer" ||
+                    loser === "Mountain" || loser === "Satan" || loser === "Dragon" || loser === "Diamond" || loser === "Platinum" || loser === "Gold") return "blows through";
+                return "blows through";
+            }
+
+            // 69. PLANET
+            if (winner === "Planet") {
+                if (loser === "Guitar" || loser === "Bowl" || loser === "Cup" || loser === "Beer" || loser === "Rain" || loser === "Water" ||
+                    loser === "TV" || loser === "Rainbow" || loser === "UFO" || loser === "Alien" || loser === "Prayer" || loser === "Mountain" ||
+                    loser === "Satan" || loser === "Dragon" || loser === "Diamond" || loser === "Platinum" ||
+                    loser === "Gold" || loser === "Devil") return "gravitationally crushes";
+                return "crushes";
+            }
+
+            // 70. GUITAR
+            if (winner === "Guitar") {
+                if (loser === "Bowl" || loser === "Cup" || loser === "Beer" || loser === "Rain" || loser === "Water" ||
+                    loser === "TV" || loser === "Rainbow" || loser === "UFO" || loser === "Alien" || loser === "Prayer" || loser === "Mountain" ||
+                    loser === "Satan" || loser === "Dragon" || loser === "Diamond" || loser === "Platinum" ||
+                    loser === "Gold" || loser === "Devil" || loser === "Fence") return "serenades and out-rocks";
+                return "out-rocks";
+            }
+
+            // 71. BOWL
+            if (winner === "Bowl") {
+                if (loser === "Cup") return "outclasses";
+                if (loser === "Beer" || loser === "Rain" || loser === "Water") return "holds";
+                if (loser === "TV" || loser === "Rainbow" || loser === "UFO" || loser === "Alien" || loser === "Prayer" || loser === "Mountain" ||
+                    loser === "Satan" || loser === "Dragon" || loser === "Diamond" || loser === "Platinum" ||
+                    loser === "Gold" || loser === "Devil" || loser === "Fence" || loser === "Video Game") return "contains";
+                return "contains";
+            }
+
+            // 72. CUP
+            if (winner === "Cup") {
+                if (loser === "Beer" || loser === "Rain" || loser === "Water") return "holds";
+                if (loser === "TV" || loser === "Rainbow" || loser === "UFO" || loser === "Alien" || loser === "Prayer" || loser === "Mountain" ||
+                    loser === "Satan" || loser === "Dragon" || loser === "Diamond" || loser === "Platinum" ||
+                    loser === "Gold" || loser === "Devil" || loser === "Fence" || loser === "Video Game" || loser === "Math") return "holds";
+                return "holds";
+            }
+
+            // 73. BEER
+            if (winner === "Beer") {
+                if (loser === "Rain" || loser === "Water") return "dilutes";
+                if (loser === "TV" || loser === "Rainbow" || loser === "UFO" || loser === "Alien" || loser === "Prayer" || loser === "Mountain" ||
+                    loser === "Satan" || loser === "Dragon" || loser === "Diamond" || loser === "Platinum" ||
+                    loser === "Gold" || loser === "Devil" || loser === "Fence" || loser === "Video Game" || loser === "Math" || loser === "Robot") return "drowns";
+                return "drowns";
+            }
+
+            // 74. RAIN
+            if (winner === "Rain") {
+                if (loser === "Water") return "adds to";
+                if (loser === "TV") return "shorts out";
+                if (loser === "Rainbow") return "creates";
+                if (loser === "UFO" || loser === "Alien") return "drenches";
+                if (loser === "Prayer" || loser === "Mountain" || loser === "Satan" || loser === "Dragon" || loser === "Diamond" || loser === "Platinum" ||
+                    loser === "Gold" || loser === "Devil" || loser === "Fence" || loser === "Video Game" || loser === "Math" || loser === "Robot" || loser === "Heart") return "washes away";
+                return "washes away";
+            }
+
+            // 75. WATER
+            if (winner === "Water") {
+                if (loser === "TV") return "shorts out";
+                if (loser === "Rainbow") return "reflects";
+                if (loser === "UFO" || loser === "Alien") return "splashes";
+                if (loser === "Prayer" || loser === "Mountain" || loser === "Satan" || loser === "Dragon" || loser === "Diamond" || loser === "Platinum" ||
+                    loser === "Gold" || loser === "Devil" || loser === "Fence" || loser === "Video Game" || loser === "Math" ||
+                    loser === "Robot" || loser === "Heart" || loser === "Electricity") return "drowns and shorts out";
+                return "drowns";
+            }
+        // 76. TV
+            if (winner === "TV") {
+                if (loser === "Rainbow") return "broadcasts";
+                if (loser === "UFO" || loser === "Alien") return "reports on";
+                if (loser === "Prayer" || loser === "Mountain" || loser === "Satan" || loser === "Dragon" || loser === "Diamond" || loser === "Platinum" ||
+                    loser === "Gold" || loser === "Devil" || loser === "Fence" || loser === "Video Game" || loser === "Math" || loser === "Robot" ||
+                    loser === "Heart" || loser === "Electricity" || loser === "Lightning") return "entertains and distracts";
+                return "distracts";
+            }
+
+            // 77. RAINBOW
+            if (winner === "Rainbow") {
+                if (loser === "UFO" || loser === "Alien" || loser === "Prayer" || loser === "Mountain" || loser === "Satan" || loser === "Dragon" ||
+                    loser === "Diamond" || loser === "Platinum" || loser === "Gold" || loser === "Devil" || loser === "Fence" || loser === "Video Game" ||
+                    loser === "Math" || loser === "Robot" || loser === "Heart" || loser === "Electricity" || loser === "Lightning" || loser === "Medusa") return "outshines and charms";
+                return "charms";
+            }
+
+            // 78. UFO
+            if (winner === "UFO") {
+                if (loser === "Alien") return "transports";
+                if (loser === "Prayer" || loser === "Mountain" || loser === "Satan" || loser === "Dragon" || loser === "Diamond" || loser === "Platinum" ||
+                    loser === "Gold" || loser === "Devil" || loser === "Fence" || loser === "Video Game" || loser === "Math" || loser === "Robot" ||
+                    loser === "Heart" || loser === "Electricity" || loser === "Lightning" || loser === "Medusa" || loser === "Power") return "abducts";
+                return "abducts";
+            }
+
+            // 79. ALIEN
+            if (winner === "Alien") {
+                if (loser === "Prayer") return "ignores";
+                if (loser === "Mountain") return "lands on";
+                if (loser === "Satan" || loser === "Dragon" || loser === "Diamond" || loser === "Platinum" || loser === "Gold" || loser === "Devil" ||
+                    loser === "Fence" || loser === "Video Game" || loser === "Math" || loser === "Robot" || loser === "Heart" || loser === "Electricity" ||
+                    loser === "Lightning" || loser === "Medusa" || loser === "Power" || loser === "Laser") return "out-smarts";
+                return "out-smarts";
+            }
+
+            // 80. PRAYER
+            if (winner === "Prayer") {
+                if (loser === "Mountain") return "moves";
+                if (loser === "Satan" || loser === "Devil") return "exorcises";
+                if (loser === "Dragon" || loser === "Diamond" || loser === "Platinum" || loser === "Gold" || loser === "Fence" || loser === "Video Game" ||
+                    loser === "Math" || loser === "Robot" || loser === "Heart" || loser === "Electricity" ||
+                    loser === "Lightning" || loser === "Medusa" || loser === "Power" || loser === "Laser" || loser === "Nuke") return "spiritually neutralizes";
+                return "neutralizes";
+            }
+
+            // 81. MOUNTAIN
+            if (winner === "Mountain") {
+                if (loser === "Satan" || loser === "Dragon" || loser === "Diamond" || loser === "Platinum" || loser === "Gold" || loser === "Devil" ||
+                    loser === "Fence" || loser === "Video Game" || loser === "Math" || loser === "Robot" || loser === "Heart" || loser === "Electricity" ||
+                    loser === "Lightning" || loser === "Medusa" || loser === "Power" || loser === "Laser" ||
+                    loser === "Nuke" || loser === "Sky") return "crushes under landmass";
+                return "crushes";
+            }
+
+            // 82. SATAN
+            if (winner === "Satan") {
+                if (loser === "Dragon") return "commands";
+                if (loser === "Diamond" || loser === "Platinum" || loser === "Gold") return "covets";
+                if (loser === "Devil") return "rules over";
+                if (loser === "Fence" || loser === "Video Game" || loser === "Math" || loser === "Robot" || loser === "Heart" || loser === "Electricity" ||
+                    loser === "Lightning" || loser === "Medusa" || loser === "Power" || loser === "Laser" || loser === "Nuke" || loser === "Sky" ||
+                    loser === "Tank") return "corrupts and overpowers";
+                return "corrupts";
+            }
+
+            // 83. DRAGON
+            if (winner === "Dragon") {
+                if (loser === "Diamond" || loser === "Platinum" || loser === "Gold") return "hoards";
+                if (loser === "Devil") return "breathes fire on";
+                if (loser === "Fence" || loser === "Video Game" || loser === "Math" || loser === "Robot" || loser === "Heart" || loser === "Electricity" ||
+                    loser === "Lightning" || loser === "Medusa" || loser === "Power" || loser === "Laser" || loser === "Nuke" || loser === "Sky" ||
+                    loser === "Tank" || loser === "Helicopter") return "devours and burns";
+                return "devours";
+            }
+
+            // 84. DIAMOND
+            if (winner === "Diamond") {
+                if (loser === "Platinum" || loser === "Gold") return "outclasses";
+                if (loser === "Devil") return "blinds";
+                if (loser === "Fence" || loser === "Video Game" || loser === "Math" || loser === "Robot" || loser === "Heart" ||
+                    loser === "Electricity" || loser === "Lightning" || loser === "Medusa" || loser === "Power" || loser === "Laser" ||
+                    loser === "Nuke" || loser === "Sky" || loser === "Tank" || loser === "Helicopter" || loser === "Dynamite") return "cuts and out-values";
+                return "out-values";
+            }
+
+            // 85. PLATINUM
+            if (winner === "Platinum") {
+                if (loser === "Gold") return "outclasses";
+                if (loser === "Devil") return "blinds";
+                if (loser === "Fence" || loser === "Video Game" || loser === "Math" || loser === "Robot" || loser === "Heart" ||
+                    loser === "Electricity" || loser === "Lightning" || loser === "Medusa" || loser === "Power" || loser === "Laser" ||
+                    loser === "Nuke" || loser === "Sky" || loser === "Tank" || loser === "Helicopter" || loser === "Dynamite" || loser === "Tornado") return "out-values";
+                return "out-values";
+            }
+
+            // 86. GOLD
+            if (winner === "Gold") {
+                if (loser === "Devil") return "bribes";
+                if (loser === "Fence" || loser === "Video Game" || loser === "Math" || loser === "Robot" || loser === "Heart" ||
+                    loser === "Electricity" || loser === "Lightning" || loser === "Medusa" || loser === "Power" || loser === "Laser" || loser === "Nuke" ||
+                    loser === "Sky" || loser === "Tank" || loser === "Helicopter" || loser === "Dynamite" || loser === "Tornado" || loser === "Quicksand") return "buys and outclasses";
+                return "outclasses";
+            }
+
+            // 87. DEVIL
+            if (winner === "Devil") {
+                if (loser === "Fence" || loser === "Video Game" || loser === "Math" || loser === "Robot" || loser === "Heart" ||
+                    loser === "Electricity" || loser === "Lightning" || loser === "Medusa" || loser === "Power" || loser === "Laser" || loser === "Nuke" ||
+                    loser === "Sky" || loser === "Tank" || loser === "Helicopter" || loser === "Dynamite" || loser === "Tornado" ||
+                    loser === "Quicksand" || loser === "Pit") return "misleads and overpowers";
+                return "overpowers";
+            }
+
+            // 88. FENCE
+            if (winner === "Fence") {
+                if (loser === "Video Game" || loser === "Math" || loser === "Robot" || loser === "Heart" || loser === "Electricity" || loser === "Lightning" ||
+                    loser === "Medusa" || loser === "Power" || loser === "Laser" || loser === "Nuke" || loser === "Sky" || loser === "Tank" || loser === "Helicopter" ||
+                    loser === "Dynamite" || loser === "Tornado" || loser === "Quicksand" || loser === "Pit" || loser === "Chain") return "confines and blocks";
+                return "blocks";
+            }
+
+            // 89. VIDEO GAME
+            if (winner === "Video Game") {
+                if (loser === "Math" || loser === "Robot" || loser === "Heart" || loser === "Electricity" || loser === "Lightning" || loser === "Medusa" ||
+                    loser === "Power" || loser === "Laser" || loser === "Nuke" || loser === "Sky" || loser === "Tank" || loser === "Helicopter" || loser === "Dynamite" ||
+                    loser === "Tornado" || loser === "Quicksand" || loser === "Pit" || loser === "Chain" || loser === "Gun") return "immerses and distracts";
+                return "distracts";
+            }
+
+            // 90. MATH
+            if (winner === "Math") {
+                if (loser === "Robot" || loser === "Heart" || loser === "Electricity" || loser === "Lightning" || loser === "Medusa" || loser === "Power" ||
+                    loser === "Laser" || loser === "Nuke" || loser === "Sky" || loser === "Tank" || loser === "Helicopter" || loser === "Dynamite" || loser === "Tornado" ||
+                    loser === "Quicksand" || loser === "Pit" || loser === "Chain" || loser === "Gun" || loser === "Law") return "out-calculates and proves";
+                return "out-calculates";
+            }
+
+            // 91. ROBOT
+            if (winner === "Robot") {
+                if (loser === "Heart") return "lacks";
+                if (loser === "Electricity" || loser === "Lightning") return "absorbs power from";
+                if (loser === "Medusa") return "immune to stare of";
+                if (loser === "Power" || loser === "Laser" || loser === "Nuke" || loser === "Sky" ||
+                    loser === "Tank" || loser === "Helicopter" || loser === "Dynamite" || loser === "Tornado" ||
+                    loser === "Quicksand" || loser === "Pit" || loser === "Chain" || loser === "Gun" || loser === "Law" || loser === "Whip") return "out-processes";
+                return "overpowers";
+            }
+
+            // 92. HEART
+            if (winner === "Heart") {
+                if (loser === "Electricity" || loser === "Lightning" || loser === "Medusa" || loser === "Power" || loser === "Laser" || loser === "Nuke" ||
+                    loser === "Sky" || loser === "Tank" || loser === "Helicopter" || loser === "Dynamite" || loser === "Tornado" || loser === "Quicksand" ||
+                    loser === "Pit" || loser === "Chain" || loser === "Gun" || loser === "Law" || loser === "Whip" || loser === "Sword") return "conquers with love";
+                return "conquers";
+            }
+
+            // 93. ELECTRICITY
+            if (winner === "Electricity") {
+                if (loser === "Lightning") return "merges with";
+                if (loser === "Medusa" || loser === "Power" || loser === "Laser" || loser === "Nuke" || loser === "Sky" || loser === "Tank" ||
+                    loser === "Helicopter" || loser === "Dynamite" || loser === "Tornado" || loser === "Quicksand" || loser === "Pit" || loser === "Chain" ||
+                    loser === "Gun" || loser === "Law" || loser === "Whip" || loser === "Sword" || loser === "Rock") return "shocks and fries";
+                return "shocks";
+            }
+
+            // 94. LIGHTNING
+            if (winner === "Lightning") {
+                if (loser === "Medusa" || loser === "Power" || loser === "Laser" || loser === "Nuke" ||
+                    loser === "Sky" || loser === "Tank" || loser === "Helicopter" || loser === "Dynamite" ||
+                    loser === "Tornado" || loser === "Quicksand" || loser === "Pit" ||
+                    loser === "Chain" || loser === "Gun" || loser === "Law" || loser === "Whip" ||
+                    loser === "Sword" || loser === "Rock" || loser === "Death") return "strikes and roasts";
+                return "strikes";
+            }
+
+            // 95. MEDUSA
+            if (winner === "Medusa") {
+                if (loser === "Power" || loser === "Laser" || loser === "Nuke" || loser === "Sky" || loser === "Tank" || loser === "Helicopter" ||
+                    loser === "Dynamite" || loser === "Tornado" || loser === "Quicksand" || loser === "Pit" || loser === "Chain" || loser === "Gun" ||
+                    loser === "Law" || loser === "Whip" || loser === "Sword" || loser === "Rock" || loser === "Death" || loser === "Wall") return "turns to stone";
+                return "turns to stone";
+            }
+
+            // 96. POWER
+            if (winner === "Power") {
+                if (loser === "Laser" || loser === "Nuke" || loser === "Sky" || loser === "Tank" || loser === "Helicopter" || loser === "Dynamite" ||
+                    loser === "Tornado" || loser === "Quicksand" || loser === "Pit" || loser === "Chain" || loser === "Gun" || loser === "Law" ||
+                    loser === "Whip" || loser === "Sword" || loser === "Rock" || loser === "Death" || loser === "Wall" || loser === "Sun") return "energizes and surges over";
+                return "surges over";
+            }
+
+            // 97. LASER
+            if (winner === "Laser") {
+                if (loser === "Nuke") return "intercepts";
+                if (loser === "Sky" || loser === "Tank" || loser === "Helicopter" || loser === "Dynamite" || loser === "Tornado" || loser === "Quicksand" ||
+                    loser === "Pit" || loser === "Chain" || loser === "Gun" || loser === "Law" || loser === "Whip" || loser === "Sword" ||
+                    loser === "Rock" || loser === "Death" || loser === "Wall" || loser === "Sun" || loser === "Camera") return "vaporizes";
+                return "vaporizes";
+            }
+
+            // 98. NUKE
+            if (winner === "Nuke") {
+                if (loser === "Sky" || loser === "Tank" || loser === "Helicopter" || loser === "Dynamite" || loser === "Tornado" || loser === "Quicksand" ||
+                    loser === "Pit" || loser === "Chain" || loser === "Gun" || loser === "Law" || loser === "Whip" ||
+                    loser === "Sword" || loser === "Rock" || loser === "Death" ||
+                    loser === "Wall" || loser === "Sun" || loser === "Camera" || loser === "Fire") return "annihilates";
+                return "annihilates";
+            }
+
+            // 99. SKY
+            if (winner === "Sky") {
+                if (loser === "Tank" || loser === "Helicopter") return "envelops";
+                if (loser === "Dynamite" || loser === "Tornado" || loser === "Quicksand" || loser === "Pit" || loser === "Chain" || loser === "Gun" ||
+                    loser === "Law" || loser === "Whip" || loser === "Sword" || loser === "Rock" || loser === "Death" || loser === "Wall" ||
+                    loser === "Sun" || loser === "Camera" || loser === "Fire" || loser === "Chainsaw") return "out-scopes and spans over";
+                return "envelops";
+            }
+
+            // 100. TANK
+            if (winner === "Tank") {
+                if (loser === "Helicopter") return "blasts";
+                if (loser === "Dynamite" || loser === "Tornado" || loser === "Quicksand" || loser === "Pit" ||
+                    loser === "Chain" || loser === "Gun" || loser === "Law" || loser === "Whip" ||
+                    loser === "Sword" || loser === "Rock" || loser === "Death" || loser === "Wall" ||
+                    loser === "Sun" || loser === "Camera" || loser === "Fire" || loser === "Chainsaw" || loser === "School") return "runs over and flattens";
+                return "flattens";
+            }
+
+            // 101. HELICOPTER
+            if (winner === "Helicopter") {
+                if (loser === "Dynamite" || loser === "Tornado" || loser === "Quicksand" || loser === "Pit" || loser === "Chain" ||
+                    loser === "Gun" || loser === "Law" || loser === "Whip" || loser === "Sword" || loser === "Rock" ||
+                    loser === "Death" || loser === "Wall" || loser === "Sun" || loser === "Camera" || loser === "Fire" ||
+                    loser === "Chainsaw" || loser === "School" || loser === "Scissors") return "out-ranges and bombards";
+                return "out-ranges";
+            }
+
+            // ALGORITHMIC FALLBACK
+            const distance = (loserIdx - winnerIdx + 101) % 101;
             if (distance <= 10) return "crushes";
             if (distance <= 20) return "outclasses";
             if (distance <= 30) return "neutralizes";
